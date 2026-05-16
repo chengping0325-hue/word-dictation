@@ -1,0 +1,92 @@
+.manual-check {
+  min-height: 100vh;
+  background: #EFF6FF;
+  padding: 8rpx 0 64rpx;
+}
+
+.question-card {
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 32rpx;
+  margin: 24rpx 32rpx 0;
+}
+.q-head {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+.q-num {
+  font-size: 22rpx;
+  color: #94a3b8;
+}
+.q-content {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #0F172A;
+  line-height: 1.5;
+  margin-bottom: 32rpx;
+  word-break: break-word;
+}
+.q-hint {
+  font-size: 22rpx;
+  color: #64748b;
+  margin-bottom: 20rpx;
+}
+.q-buttons {
+  display: flex;
+  gap: 16rpx;
+}
+.btn-correct {
+  flex: 1;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: 24rpx;
+  background: #dcfce7;
+  border: 3rpx solid #16a34a;
+  color: #16a34a;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.btn-correct::after { border: none; }
+.btn-wrong {
+  flex: 1;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: 24rpx;
+  background: #fee2e2;
+  border: 3rpx solid #dc2626;
+  color: #dc2626;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.btn-wrong::after { border: none; }
+
+.word-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f1f5fd;
+}
+.word-item:last-child { border-bottom: none; }
+.c-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.skip-row {
+  text-align: center;
+  padding: 24rpx 32rpx 0;
+  font-size: 24rpx;
+  color: #64748b;
+}
+
+.debug-link {
+  text-align: center;
+  margin-top: 32rpx;
+  font-size: 22rpx;
+  color: #94a3b8;
+  text-decoration: underline;
+}

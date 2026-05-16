@@ -1,0 +1,42 @@
+<view class="ocr-confirm">
+
+  <view class="card">
+    <view class="ocr-summary">
+      <view class="orig-thumb">原图</view>
+      <view class="flex-1 summary-text">
+        <view>已识别 <text class="hl">{{ totalCount }} 条内容</text></view>
+        <view class="warn">{{ suspiciousCount }} 条可能识别有误,请核对</view>
+      </view>
+      <view class="retake-btn" bindtap="onRetake">↻ 重拍</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">识别结果 · 点击可编辑</view>
+
+    <view wx:for="{{ items }}" wx:key="id"
+          class="ocr-item {{ item.suspicious ? 'suspicious' : '' }} {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
+      <view wx:if="{{ !item.suspicious }}" class="check-mark">✓</view>
+      <view wx:else class="warn-mark">⚠</view>
+      <type-tag type="{{ item.type }}" />
+      <view class="flex-1">
+        <view class="item-text {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'sentence' : '' }} {{ item.suspicious ? 'wrong-underline' : '' }}">{{ item.content }}</view>
+        <view wx:if="{{ item.suspicious }}" class="item-warn">⚠ 句中可能有拼写问题,点击修改</view>
+      </view>
+      <view class="del-btn" catchtap="onDelete" data-id="{{ item.id }}">✕</view>
+    </view>
+
+    <view class="ocr-item add-manual" bindtap="onAddManual">
+      <view class="plus">+</view>
+      <view class="add-label">手动补充内容</view>
+    </view>
+  </view>
+
+  <view class="tip-card">
+    <view class="tip-head">💡 核对提示</view>
+    <view class="tip-body">句子识别难免有偏差,只需核对 <text class="bold">单词写法</text> 即可,标点和大小写不重要。</view>
+  </view>
+
+  <button class="btn-primary" bindtap="onConfirm">确认添加 {{ totalCount }} 条内容</button>
+
+</view>

@@ -1,36 +1,20 @@
+// app.js
+// 入口：globalData 占位 + 云开发初始化（Phase 4 才真正调用）
 App({
-  globalData: {
-    openid: null,
-    userInfo: null
-  },
-
   onLaunch() {
-    if (!wx.cloud) {
-      console.error('请升级微信客户端至 2.2.1 以上')
-      return
-    }
-    wx.cloud.init({
-      env: 'cloud1-d0gi6w2bn69381e7e',
-      traceUser: true
-    })
-    this.login()
+    // Phase 4 接入云开发时取消注释，填入真实环境 ID
+    // if (wx.cloud) {
+    //   wx.cloud.init({
+    //     env: 'YOUR-CLOUD-ENV-ID',
+    //     traceUser: true
+    //   })
+    // }
   },
 
-  login() {
-    const self = this
-    wx.cloud.callFunction({
-      name: 'getOpenid',
-      success(res) {
-        self.globalData.openid = res.result.openid
-        console.log('openid:', res.result.openid)
-      },
-      fail(err) {
-        console.error('获取 openid 失败', err)
-      }
-    })
-  },
-
-  getOpenid() {
-    return this.globalData.openid
+  globalData: {
+    openid: '',
+    currentDictation: null,
+    currentResult: null,
+    pendingOcrResult: null
   }
 })

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "word-item": "/components/word-item/index",
+    "dictation-tab-bar": "/components/tab-bar/index"
+  },
+  "navigationBarTitleText": "单词听写",
+  "backgroundColor": "#EFF6FF"
+}

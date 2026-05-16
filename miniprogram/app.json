@@ -1,18 +1,24 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/dictation/index",
-    "pages/playing/index",
-    "pages/grading/index",
-    "pages/wordbook/index"
+    "pages/home/index",
+    "pages/dictation/index/index",
+    "pages/dictation/ocr-confirm/index",
+    "pages/dictation/playing/index",
+    "pages/dictation/finished/index",
+    "pages/dictation/grading/index",
+    "pages/dictation/result/index",
+    "pages/dictation/manual-check/index",
+    "pages/dictation/notebook/index",
+    "pages/soon/index"
   ],
   "window": {
-    "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#F2F2F7",
-    "navigationBarTitleText": "口袋工具",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F2F2F7"
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "书斋",
+    "backgroundColor": "#EEF1FB",
+    "backgroundTextStyle": "light"
   },
-  "cloud": true,
-  "sitemapLocation": "sitemap.json"
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
 }

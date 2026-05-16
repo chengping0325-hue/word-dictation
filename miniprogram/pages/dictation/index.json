@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "单词听写",
-  "usingComponents": {
-    "inner-tabbar": "/components/inner-tabbar/index"
-  }
-}

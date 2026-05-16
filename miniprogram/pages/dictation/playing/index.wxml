@@ -1,0 +1,59 @@
+<view class="playing-page">
+
+  <statusbar-spacer />
+
+  <!-- 自定义导航栏（只画一个返回 + 标题，胶囊按钮由系统自动渲染） -->
+  <view class="custom-navbar">
+    <view class="nav-title">单词听写</view>
+  </view>
+
+  <!-- 顶部栏 -->
+  <view class="top-row">
+    <view class="circle-btn" bindtap="onBack">‹</view>
+    <view class="progress-num">{{ currentIndex + 1 }} / {{ total }}</view>
+    <view class="circle-placeholder"></view>
+  </view>
+
+  <view class="progress-bars">
+    <view wx:for="{{ progressBars }}" wx:key="*this"
+          class="progress-bar-seg {{ item }}"></view>
+  </view>
+
+  <view class="center-area">
+    <view class="type-pill">
+      <text class="type-pill-label">{{ typeLabel }}</text>
+    </view>
+
+    <view class="sound-circle">
+      <view class="ripple ripple1"></view>
+      <view class="ripple ripple2"></view>
+      <view class="speaker-emoji">🔊</view>
+    </view>
+
+    <view class="read-progress">
+      <view class="dots">
+        <view wx:for="{{ readTotal }}" wx:key="*this"
+              class="dot {{ index < readCurrent ? 'active' : '' }}"></view>
+      </view>
+      <view class="read-meta">第 {{ readCurrent }} 次 / 共 {{ readTotal }} 次</view>
+    </view>
+  </view>
+
+  <view class="spacer"></view>
+
+  <view class="controls">
+    <view class="ctrl-btn" bindtap="onReplay">
+      <view class="ctrl-icon">↺</view>
+      <view class="ctrl-label">重听</view>
+    </view>
+    <view class="ctrl-btn primary" bindtap="onTogglePause">
+      <view class="ctrl-icon">{{ isPaused ? '▶' : '⏸' }}</view>
+      <view class="ctrl-label">{{ isPaused ? '继续' : '暂停' }}</view>
+    </view>
+    <view class="ctrl-btn" bindtap="onNext">
+      <view class="ctrl-icon">⏭</view>
+      <view class="ctrl-label">下一个</view>
+    </view>
+  </view>
+
+</view>

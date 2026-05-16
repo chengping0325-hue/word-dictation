@@ -1,0 +1,6 @@
+<view class="word-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
+  <view wx:if="{{ showDrag }}" class="drag-handle">⠿</view>
+  <type-tag type="{{ item.type }}" />
+  <view class="word-text {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }}">{{ item.content }}</view>
+  <view wx:if="{{ showDelete }}" class="word-del" catchtap="onDelete">✕</view>
+</view>

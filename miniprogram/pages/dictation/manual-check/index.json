@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "type-tag": "/components/type-tag/index"
+  },
+  "navigationBarTitleText": "手动核对",
+  "backgroundColor": "#EFF6FF"
+}

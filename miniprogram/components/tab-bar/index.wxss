@@ -1,0 +1,102 @@
+.dictation-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(116rpx + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #fff;
+  border-top: 1rpx solid #E4ECFC;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  color: #94a3b8;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+.tab-item.active {
+  color: #2563EB;
+  font-weight: 600;
+}
+
+.tab-icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 用 CSS 画的简化喇叭/书本图标，避免引入外部资源 */
+.icon-speaker {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 14rpx 22rpx 14rpx 0;
+  border-color: transparent currentColor transparent transparent;
+  position: relative;
+}
+.icon-speaker::before {
+  content: '';
+  position: absolute;
+  left: 4rpx;
+  top: -6rpx;
+  width: 12rpx;
+  height: 12rpx;
+  background: currentColor;
+}
+.icon-speaker::after {
+  content: '';
+  position: absolute;
+  left: 28rpx;
+  top: -8rpx;
+  width: 8rpx;
+  height: 28rpx;
+  border-right: 4rpx solid currentColor;
+  border-top: 4rpx solid currentColor;
+  border-bottom: 4rpx solid currentColor;
+  border-radius: 0 50% 50% 0;
+  opacity: 0.6;
+}
+
+.icon-book {
+  width: 28rpx;
+  height: 36rpx;
+  border: 4rpx solid currentColor;
+  border-left-width: 6rpx;
+  border-radius: 4rpx 8rpx 8rpx 4rpx;
+  position: relative;
+}
+.icon-book::before {
+  content: '';
+  position: absolute;
+  left: -2rpx;
+  top: 6rpx;
+  width: 18rpx;
+  height: 4rpx;
+  background: currentColor;
+  opacity: 0.5;
+}
+.icon-book::after {
+  content: '';
+  position: absolute;
+  left: -2rpx;
+  top: 16rpx;
+  width: 12rpx;
+  height: 4rpx;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.tab-label {
+  letter-spacing: 1rpx;
+}

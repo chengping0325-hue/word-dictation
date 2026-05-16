@@ -1,0 +1,120 @@
+.ocr-confirm {
+  min-height: 100vh;
+  background: #EFF6FF;
+  padding: 8rpx 0 64rpx;
+}
+
+.ocr-summary {
+  display: flex;
+  gap: 20rpx;
+  align-items: center;
+}
+.orig-thumb {
+  width: 112rpx;
+  height: 112rpx;
+  background: #1e293b;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 20rpx;
+  flex-shrink: 0;
+}
+.summary-text {
+  font-size: 24rpx;
+  color: #64748b;
+  line-height: 1.5;
+}
+.summary-text .hl { color: #2563EB; font-weight: 600; }
+.summary-text .warn { color: #dc2626; margin-top: 4rpx; }
+.retake-btn {
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 24rpx;
+  border-radius: 16rpx;
+  background: #fff;
+  border: 1rpx solid #bfdbfe;
+  color: #2563EB;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.ocr-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f1f5fd;
+}
+.ocr-item.with-sentence { align-items: flex-start; }
+.ocr-item:last-child { border-bottom: none; }
+
+.ocr-item.suspicious {
+  background: #fef3c7;
+  margin: 0 -28rpx;
+  padding: 20rpx 28rpx;
+  align-items: flex-start;
+}
+
+.check-mark {
+  color: #16a34a;
+  font-size: 26rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.warn-mark {
+  color: #92400e;
+  font-size: 26rpx;
+  flex-shrink: 0;
+}
+
+.item-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0F172A;
+  word-break: break-word;
+}
+.item-text.sentence {
+  font-size: 26rpx;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.suspicious .item-text {
+  color: #92400e;
+}
+.wrong-underline {
+  border-bottom: 3rpx dashed #92400e;
+  padding-bottom: 2rpx;
+}
+.item-warn {
+  font-size: 20rpx;
+  color: #92400e;
+  margin-top: 6rpx;
+}
+
+.del-btn {
+  width: 40rpx;
+  height: 40rpx;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  flex-shrink: 0;
+}
+.suspicious .del-btn { color: #92400e; }
+
+.add-manual { color: #2563EB; }
+.add-manual .plus {
+  font-size: 28rpx;
+  color: #2563EB;
+  font-weight: 600;
+}
+.add-manual .add-label {
+  font-size: 26rpx;
+  color: #2563EB;
+  font-weight: 600;
+}
+
+.bold { font-weight: 600; }

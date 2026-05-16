@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>书斋 · 完整原型 v9</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1e1e2e; font-family: 'Comic Neue', 'PingFang SC', sans-serif; min-height: 100vh; padding: 40px 20px; }
+  h1.page-title { font-family: 'Baloo 2', sans-serif; color: #fff; text-align: center; font-size: 24px; margin-bottom: 8px; font-weight: 600; }
+  p.subtitle { color: #888; text-align: center; font-size: 13px; margin-bottom: 16px; }
+  .version-tag { display: inline-block; background: #2563EB; color: #fff; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+  .mvp-banner { background: #1e3a8a; color: #93c5fd; text-align: center; padding: 10px 20px; border-radius: 10px; max-width: 700px; margin: 0 auto 16px; font-size: 12px; line-height: 1.5; }
+  .section-title { color: #fff; font-family: 'Baloo 2', sans-serif; font-size: 18px; font-weight: 600; text-align: center; margin: 40px 0 8px; padding-top: 24px; border-top: 1px solid #333; }
+  .section-sub { color: #888; text-align: center; font-size: 12px; margin-bottom: 28px; }
+  .screens { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; align-items: flex-start; max-width: 1400px; margin: 0 auto; }
+  .screen-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .screen-label { font-family: 'Baloo 2', sans-serif; color: #aaa; font-size: 13px; letter-spacing: 0.5px; text-align: center; max-width: 320px; }
+  .screen-label .new { background: #F59E0B; color: #fff; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: 4px; }
+  .screen-label .updated { background: #2563EB; color: #fff; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: 4px; }
+  .phone { width: 320px; background: #fff; border-radius: 36px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.5); position: relative; }
+  .screen { background: #EFF6FF; min-height: 600px; padding: 0 0 24px; position: relative; }
+
+  /* ── 书斋首页 ── */
+  .home-screen {
+    background: linear-gradient(180deg, #EEF1FB 0%, #E3EAFB 100%);
+    min-height: 640px;
+    padding: 0 0 24px;
+  }
+  .home-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 8px;
+  }
+  .home-title {
+    font-family: 'Baloo 2', 'PingFang SC', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #0F172A;
+    letter-spacing: 0.3px;
+  }
+  .home-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563EB, #60a5fa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 16px 16px 0;
+  }
+  .tool-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px 16px 16px;
+    aspect-ratio: 1 / 1.1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(37,99,235,0.06);
+    position: relative;
+  }
+  .tool-card.disabled { opacity: 0.7; }
+  .tool-card.placeholder {
+    background: rgba(255,255,255,0.5);
+    border: 1.5px dashed #cbd5e1;
+    box-shadow: none;
+  }
+  .tool-icon {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    font-size: 48px;
+    line-height: 1;
+  }
+  .tool-name {
+    font-family: 'Baloo 2', 'PingFang SC', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0F172A;
+    margin-bottom: 4px;
+  }
+  .tool-desc {
+    font-size: 11px;
+    color: #94a3b8;
+    text-align: center;
+  }
+  .tool-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(148,163,184,0.18);
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 6px;
+  }
+  .tool-badge.hot {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .tool-plus {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #cbd5e1;
+    font-weight: 300;
+    margin-bottom: 12px;
+  }
+
+  /* ── 其他通用 ── */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 16px; background: #fff; border-bottom: 1px solid #E4ECFC; }
+  .topbar-title { font-family: 'Baloo 2', sans-serif; font-size: 18px; font-weight: 600; color: #0F172A; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #2563EB, #60a5fa); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
+  .card { background: #fff; border-radius: 14px; padding: 14px; margin: 12px 16px 0; box-shadow: 0 2px 8px rgba(37,99,235,0.07); }
+  .card-title { font-family: 'Baloo 2', sans-serif; font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 10px; letter-spacing: 0.5px; }
+  .upload-row { display: flex; gap: 8px; }
+  .upload-btn { flex: 1; height: 48px; border-radius: 10px; border: 1.5px dashed #bfdbfe; background: #eff6ff; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 600; color: #2563EB; }
+  .upload-btn.photo { background: #fdf4ff; border-color: #e879f9; color: #a21caf; }
+  .tag { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; display: inline-block; }
+  .tag-en { background: #dbeafe; color: #1e40af; }
+  .tag-cn { background: #fef3c7; color: #92400e; }
+  .tag-en-sent { background: #e0e7ff; color: #3730a3; }
+  .tag-cn-sent { background: #fce7f3; color: #9d174d; }
+  .word-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5fd; gap: 8px; }
+  .word-item.compact { align-items: center; }
+  .word-item.with-sentence { align-items: flex-start; }
+  .word-item.with-sentence .tag { margin-top: 2px; }
+  .word-item:last-child { border-bottom: none; }
+  .drag-handle { color: #cbd5e1; font-size: 14px; }
+  .word-text { flex: 1; font-size: 14px; font-weight: 600; color: #0F172A; }
+  .word-text.sentence { font-size: 13px; line-height: 1.5; font-weight: 500; }
+  .word-text.wrong { color: #dc2626; }
+  .word-del { width: 20px; height: 20px; border-radius: 50%; color: #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
+  .setting-label { font-size: 13px; color: #475569; font-weight: 600; }
+  .setting-sub { font-size: 10px; color: #94a3b8; margin-top: 1px; }
+  .stepper { display: flex; align-items: center; gap: 10px; }
+  .stepper-btn { width: 28px; height: 28px; border-radius: 50%; background: #EFF6FF; border: 1.5px solid #bfdbfe; color: #2563EB; font-size: 14px; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+  .stepper-val { font-family: 'Baloo 2', sans-serif; font-size: 15px; font-weight: 600; color: #0F172A; min-width: 28px; text-align: center; }
+  .btn-primary { display: block; width: calc(100% - 32px); margin: 14px 16px 0; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #2563EB, #3b82f6); color: #fff; font-family: 'Baloo 2', sans-serif; font-size: 15px; font-weight: 600; border: none; box-shadow: 0 4px 16px rgba(37,99,235,0.35); letter-spacing: 0.3px; }
+  .dictation-screen { background: linear-gradient(160deg, #1e3a8a 0%, #2563EB 100%); min-height: 640px; padding: 0 0 28px; color: #fff; display: flex; flex-direction: column; }
+  .dictation-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; }
+  .circle-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+  .progress-num { font-family: 'Baloo 2', sans-serif; font-size: 15px; opacity: 0.9; font-weight: 600; }
+  .progress-bars { display: flex; gap: 4px; padding: 0 18px; margin-top: 4px; }
+  .progress-bar-segment { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.2); }
+  .progress-bar-segment.done { background: rgba(255,255,255,0.7); }
+  .progress-bar-segment.active { background: #F59E0B; }
+  .type-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 12px; margin-bottom: 28px; }
+  .type-pill .label { font-size: 11px; font-weight: 600; opacity: 0.95; }
+  .type-pill .sep { font-size: 11px; opacity: 0.7; }
+  .type-pill .meta { font-size: 11px; opacity: 0.7; }
+  .playing-label { font-size: 12px; opacity: 0.7; margin-bottom: 32px; letter-spacing: 0.5px; text-align: center; }
+  .sound-circle { width: 148px; height: 148px; border-radius: 50%; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; position: relative; }
+  .sound-circle::before, .sound-circle::after { content: ''; position: absolute; border-radius: 50%; border: 2px solid rgba(245,158,11,0.4); animation: ripple 1.8s ease-out infinite; }
+  .sound-circle::before { inset: -10px; }
+  .sound-circle::after { inset: -22px; border-color: rgba(245,158,11,0.2); animation-delay: 0.4s; }
+  @keyframes ripple { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
+  .play-dots { display: flex; justify-content: center; gap: 8px; }
+  .play-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+  .play-dot.active { background: #F59E0B; }
+  .dictation-controls { display: flex; align-items: center; justify-content: space-around; padding: 0 24px; }
+  .ctrl-btn { text-align: center; }
+  .ctrl-btn .icon { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; color: #fff; font-size: 22px; }
+  .ctrl-btn.primary .icon { width: 68px; height: 68px; background: #F59E0B; font-size: 28px; }
+  .ctrl-btn .label { font-size: 11px; opacity: 0.75; }
+  .score-card { background: linear-gradient(135deg, #2563EB, #3b82f6); border-radius: 16px; padding: 18px; margin: 12px 16px 0; text-align: center; color: #fff; }
+  .score-num { font-family: 'Baloo 2', sans-serif; font-size: 44px; font-weight: 600; color: #F59E0B; line-height: 1.1; }
+  .score-label { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+  .result-item { display: flex; padding: 8px 0; border-bottom: 1px solid #f1f5fd; gap: 8px; align-items: flex-start; }
+  .result-item.compact { align-items: center; }
+  .result-item:last-child { border-bottom: none; }
+  .result-word { font-size: 14px; font-weight: 600; color: #0F172A; }
+  .result-word.sentence { font-size: 13px; line-height: 1.6; }
+  .result-word.wrong { color: #dc2626; }
+  .word-bad { background:#fee2e2; color:#dc2626; padding:1px 4px; border-radius:3px; text-decoration:line-through; text-decoration-color:#dc2626; }
+  .word-good { color: #16a34a; font-weight: 600; }
+  .result-correction { font-size: 11px; color: #64748b; margin-top: 4px; }
+  .result-correction .arrow { color: #94a3b8; margin: 0 4px; }
+  .result-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 8px; flex-shrink: 0; white-space: nowrap; }
+  .badge-ok { background: #dcfce7; color: #16a34a; }
+  .badge-err { background: #fee2e2; color: #dc2626; }
+  .tip-card { background: #EFF6FF; border: 1px dashed #bfdbfe; border-radius: 12px; padding: 12px 14px; margin: 10px 16px 0; }
+  .tip-card .head { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #0F172A; font-weight: 600; }
+  .tip-card .body { font-size: 11px; color: #475569; margin-top: 4px; line-height: 1.6; }
+  .modal-bg { background: rgba(15,23,42,0.6); min-height: 600px; display: flex; align-items: flex-end; justify-content: center; }
+  .modal-card { background: #fff; border-radius: 20px 20px 0 0; width: 100%; padding: 24px 20px 20px; text-align: center; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* ── 微信小程序状态栏 + 导航栏 ── */
+  .wx-statusbar {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0F172A;
+    background: transparent;
+  }
+  .wx-statusbar.dark {
+    color: #fff;
+    background: transparent;
+  }
+  .wx-statusbar .time { font-family: 'Baloo 2', sans-serif; }
+  .wx-statusbar .indicators { display: flex; gap: 5px; align-items: center; font-size: 11px; }
+  .wx-navbar {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: transparent;
+  }
+  .wx-navbar.solid {
+    background: #fff;
+    border-bottom: 0.5px solid #E4ECFC;
+  }
+  .wx-navbar.dark {
+    background: transparent;
+    border-bottom: none;
+  }
+  .wx-navbar .title {
+    font-family: 'PingFang SC', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0F172A;
+  }
+  .wx-navbar.dark .title { color: #fff; }
+  .wx-navbar .mp-capsule {
+    position: absolute;
+    right: 7px;
+    width: 87px;
+    height: 32px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 16px;
+    border: 0.5px solid rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    color: #1e293b;
+  }
+  .wx-navbar.dark .mp-capsule {
+    background: rgba(255,255,255,0.15);
+    border: 0.5px solid rgba(255,255,255,0.2);
+    color: #fff;
+  }
+  .wx-navbar .mp-capsule .ic { font-size: 16px; letter-spacing: 1px; }
+  .wx-navbar .mp-capsule .divider {
+    width: 0.5px;
+    height: 16px;
+    background: rgba(0,0,0,0.15);
+  }
+  .wx-navbar.dark .mp-capsule .divider { background: rgba(255,255,255,0.3); }
+
+  .wx-header { position: relative; z-index: 10; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">书斋<span class="version-tag">原型 v9</span></h1>
+<p class="subtitle">概念统一 · 全程只有「单词本」一个名字</p>
+<div class="mvp-banner">
+  💡 <b>MVP 阶段全免费</b> · 首页风格已与子工具统一 · 句子 OCR 已集成,判分支持词级错误高亮
+</div>
+
+<!-- ════════════════ 工具集首页 ════════════════ -->
+<div class="section-title">书斋首页</div>
+<p class="section-sub">所有子工具的入口</p>
+
+<div class="screens">
+
+  <div class="screen-wrap">
+    <div class="screen-label">⓪ 书斋首页<span class="new">NEW</span></div>
+    <div class="phone">
+      <div class="home-screen">
+        <div class="wx-header">
+          <div class="wx-statusbar">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar">
+            <span class="title">书斋</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+
+        <div style="height:8px;"></div>
+
+        <div class="tools-grid">
+          <div class="tool-card">
+            <div class="tool-badge hot">推荐</div>
+            <div class="tool-icon">🎧</div>
+            <div class="tool-name">单词听写</div>
+            <div class="tool-desc">中英文 · 单词与句子</div>
+          </div>
+
+          <div class="tool-card disabled">
+            <div class="tool-badge">敬请期待</div>
+            <div class="tool-icon">📚</div>
+            <div class="tool-name">阅读打卡</div>
+            <div class="tool-desc">读书计划与记录</div>
+          </div>
+
+          <div class="tool-card placeholder disabled">
+            <div class="tool-badge">敬请期待</div>
+            <div class="tool-plus">+</div>
+            <div class="tool-name" style="color:#64748b;">更多工具</div>
+            <div class="tool-desc">陆续上线中</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; padding:36px 16px 0; font-size:11px; color:#94a3b8;">每一个小工具,都为节省你的时间而生</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════ 单词听写 ════════════════ -->
+<div class="section-title">📖 单词听写(子工具)</div>
+<p class="section-sub">从首页点击进入</p>
+
+<div class="screens">
+
+  <div class="screen-wrap">
+    <div class="screen-label">① 听写主页(空状态)<span class="updated">UPDATED</span></div>
+    <div class="phone">
+      <div class="screen" style="padding-bottom:74px;">
+<div class="wx-header">
+          <div class="wx-statusbar">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar solid">
+            <span class="title">单词听写</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">添加内容</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <div style="flex:1; display:flex; gap:6px; align-items:center; background:#F8FAFC; border-radius:10px; padding:4px 4px 4px 12px; border:1px solid #E4ECFC;">
+              <input placeholder="输入单词或句子" style="flex:1; min-width:0; border:none; outline:none; background:transparent; font-size:14px; height:40px; color:#0F172A;" />
+              <div style="width:36px; height:36px; border-radius:8px; background:#fdf4ff; display:flex; align-items:center; justify-content:center; color:#a21caf; flex-shrink:0;" title="拍照上传">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+            </div>
+            <button style="height:48px; padding:0 16px; border-radius:10px; background:#2563EB; color:#fff; font-size:14px; font-weight:600; border:none; flex-shrink:0; box-shadow:0 2px 8px rgba(37,99,235,0.25);">添加</button>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:8px;">支持单词、句子、中英文 · 系统自动识别</div>
+        </div>
+        <div class="card">
+          <div class="card-title">听写清单</div>
+          <div style="padding:32px 0; text-align:center;">
+            <div style="margin-bottom:12px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#bfdbfe" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+            <div style="font-family:'Baloo 2',sans-serif; font-size:14px; font-weight:600; color:#0F172A; margin-bottom:6px;">还没有内容</div>
+            <div style="font-size:12px; color:#94a3b8;">手动输入或拍照添加内容</div>
+          </div>
+        </div>
+        <div class="card" style="opacity:0.45;">
+          <div class="card-title">听写设置</div>
+          <div class="setting-row"><span class="setting-label">朗读次数</span><div class="stepper"><div class="stepper-btn">−</div><div class="stepper-val">2</div><div class="stepper-btn">+</div></div></div>
+          <div class="setting-row"><span class="setting-label">间隔时间</span><div class="stepper"><div class="stepper-btn">−</div><div class="stepper-val">5s</div><div class="stepper-btn">+</div></div></div>
+        </div>
+        <button class="btn-primary" style="opacity:0.45;">开始听写</button>
+
+        <!-- 底部 Tab -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height:58px; background:#fff; border-top:1px solid #E4ECFC; display:flex; align-items:center;">
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:#2563EB;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            <span style="font-size:10px; font-weight:600;">听写</span>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:#94a3b8;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span style="font-size:10px;">单词本</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">② 听写主页(已添加内容)<span class="updated">UPDATED</span></div>
+    <div class="phone">
+      <div class="screen" style="padding-bottom:74px;">
+<div class="wx-header">
+          <div class="wx-statusbar">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar solid">
+            <span class="title">单词听写</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">添加内容</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <div style="flex:1; display:flex; gap:6px; align-items:center; background:#F8FAFC; border-radius:10px; padding:4px 4px 4px 12px; border:1px solid #E4ECFC;">
+              <input placeholder="输入单词或句子" style="flex:1; min-width:0; border:none; outline:none; background:transparent; font-size:14px; height:40px; color:#0F172A;" />
+              <div style="width:36px; height:36px; border-radius:8px; background:#fdf4ff; display:flex; align-items:center; justify-content:center; color:#a21caf; flex-shrink:0;" title="拍照上传">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+            </div>
+            <button style="height:48px; padding:0 16px; border-radius:10px; background:#2563EB; color:#fff; font-size:14px; font-weight:600; border:none; flex-shrink:0; box-shadow:0 2px 8px rgba(37,99,235,0.25);">添加</button>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <span class="card-title" style="margin-bottom:0;">听写清单 · 6 条</span>
+            <span style="font-size:11px; color:#dc2626; font-weight:600;">一键清空</span>
+          </div>
+          <div class="word-item"><span class="drag-handle">⠿</span><span class="tag tag-en">EN</span><span class="word-text">apple</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+          <div class="word-item"><span class="drag-handle">⠿</span><span class="tag tag-cn">中</span><span class="word-text">苹果</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+          <div class="word-item"><span class="drag-handle">⠿</span><span class="tag tag-en">EN</span><span class="word-text">banana</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+          <div class="word-item with-sentence"><span class="drag-handle">⠿</span><span class="tag tag-en-sent">EN 句</span><span class="word-text sentence">I like apples very much.</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="margin-top:2px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+          <div class="word-item with-sentence"><span class="drag-handle">⠿</span><span class="tag tag-cn-sent">中 句</span><span class="word-text sentence">床前明月光,疑是地上霜。</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="margin-top:2px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+          <div class="word-item"><span class="drag-handle">⠿</span><span class="tag tag-en">EN</span><span class="word-text">grape</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
+        </div>
+        <div class="card">
+          <div class="card-title">听写设置</div>
+          <div class="setting-row"><span class="setting-label">朗读次数</span><div class="stepper"><div class="stepper-btn">−</div><div class="stepper-val">2</div><div class="stepper-btn">+</div></div></div>
+          <div class="setting-row"><div><div class="setting-label">间隔时间</div><div class="setting-sub">句子建议 5 秒以上</div></div><div class="stepper"><div class="stepper-btn">−</div><div class="stepper-val">5s</div><div class="stepper-btn">+</div></div></div>
+        </div>
+        <button class="btn-primary">开始听写</button>
+
+        <!-- 底部 Tab -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height:58px; background:#fff; border-top:1px solid #E4ECFC; display:flex; align-items:center;">
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:#2563EB;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            <span style="font-size:10px; font-weight:600;">听写</span>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:#94a3b8;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span style="font-size:10px;">单词本</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">③ 拍照识别(支持句子)</div>
+    <div class="phone">
+      <div class="screen">
+        <div class="wx-header">
+          <div class="wx-statusbar">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar solid">
+            <span class="title">确认识别结果</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div style="width:56px; height:56px; background:#1e293b; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:10px;">原图</div>
+            <div style="flex:1; font-size:12px; color:#64748b; line-height:1.5;">已识别 <span style="color:#2563EB; font-weight:600;">5 条内容</span>(含 2 个句子)<br><span style="color:#dc2626;">2 条可能识别有误,请核对</span></div>
+            <button style="height:32px; padding:0 12px; border-radius:8px; background:#fff; border:1px solid #bfdbfe; color:#2563EB; font-size:12px; font-weight:600; display:flex; align-items:center; gap:4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15A9 9 0 0 1 5.64 18.36L1 14"/></svg>
+              重拍
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">识别结果 · 点击可编辑</div>
+          <div class="word-item compact">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="tag tag-en">EN</span><span class="word-text">apple</span><span class="word-del">✕</span>
+          </div>
+          <div class="word-item compact">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="tag tag-cn">中</span><span class="word-text">苹果</span><span class="word-del">✕</span>
+          </div>
+          <div style="background:#fef3c7; margin:0 -14px; padding:10px 14px; border-bottom:1px solid #f1f5fd; display:flex; align-items:flex-start; gap:8px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" style="margin-top:2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+            <span class="tag tag-en-sent" style="margin-top:1px;">EN 句</span>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:500; color:#92400e; line-height:1.5; border-bottom:1.5px dashed #92400e; padding-bottom:1px;">I like aples vry mch.</div>
+              <div style="font-size:10px; color:#92400e; margin-top:3px;">⚠ 句中可能有拼写问题,点击修改</div>
+            </div>
+            <span style="font-size:13px; color:#92400e; margin-top:2px;">✕</span>
+          </div>
+          <div class="word-item with-sentence">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" style="margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="tag tag-cn-sent">中 句</span>
+            <span class="word-text sentence">床前明月光,疑是地上霜。</span>
+            <span class="word-del" style="margin-top:2px;">✕</span>
+          </div>
+          <div style="background:#fef3c7; margin:0 -14px; padding:10px 14px; display:flex; align-items:center; gap:8px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+            <span class="tag tag-en">EN</span>
+            <span style="flex:1; font-size:14px; font-weight:600; color:#92400e; border-bottom:1.5px dashed #92400e; padding-bottom:1px;">grappe</span>
+            <span style="font-size:13px; color:#92400e;">✕</span>
+          </div>
+          <div class="word-item compact" style="border-bottom:none;">
+            <span style="font-size:13px; color:#2563EB; font-weight:600;">+</span>
+            <span style="flex:1; font-size:13px; color:#2563EB; font-weight:600;">手动补充内容</span>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="head">💡 核对提示</div>
+          <div class="body">句子识别难免有偏差,只需核对 <b>单词写法</b> 即可,标点和大小写不重要。</div>
+        </div>
+        <button class="btn-primary">确认添加 5 条内容</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">④ 听写中<span class="updated">UPDATED</span></div>
+    <div class="phone">
+      <div class="dictation-screen">
+        <div class="wx-header">
+          <div class="wx-statusbar dark">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar dark">
+            <span class="title">单词听写</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div class="dictation-topbar" style="padding-top:8px;">
+          <div class="circle-btn">←</div>
+          <div class="progress-num">3 / 6</div>
+          <div style="width:36px;"></div>
+        </div>
+        <div class="progress-bars">
+          <div class="progress-bar-segment done"></div>
+          <div class="progress-bar-segment done"></div>
+          <div class="progress-bar-segment active"></div>
+          <div class="progress-bar-segment"></div>
+          <div class="progress-bar-segment"></div>
+          <div class="progress-bar-segment"></div>
+        </div>
+        <div style="text-align:center; padding:48px 24px 0;">
+          <div class="type-pill" style="margin-bottom:48px;"><span class="label">EN 句</span></div>
+          <div class="sound-circle">
+            <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <div class="play-dots"><div class="play-dot active"></div><div class="play-dot"></div></div>
+            <div style="font-size:12px; opacity:0.7; letter-spacing:0.5px;">第 1 次 / 共 2 次</div>
+          </div>
+        </div>
+        <div style="flex:1;"></div>
+        <div class="dictation-controls">
+          <div class="ctrl-btn"><div class="icon">↺</div><div class="label">重听</div></div>
+          <div class="ctrl-btn primary"><div class="icon">⏸</div><div class="label">暂停</div></div>
+          <div class="ctrl-btn"><div class="icon">⏭</div><div class="label">下一个</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">⑤ 听写完成<span class="updated">UPDATED</span></div>
+    <div class="phone">
+      <div class="dictation-screen" style="padding-bottom:24px;">
+        <div class="wx-header">
+          <div class="wx-statusbar dark">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar dark">
+            <span class="title">单词听写</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div class="dictation-topbar" style="padding-top:8px;"><div style="width:36px;"></div><div class="progress-num">6 / 6 已读完</div><div style="width:36px;"></div></div>
+        <div style="text-align:center; padding:60px 24px 0;">
+          <div style="width:88px; height:88px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; margin:0 auto 24px;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div style="font-size:20px; font-weight:600; margin-bottom:8px;">听写完成!</div>
+          <div style="font-size:13px; opacity:0.7; margin-bottom:36px;">共听写 6 条内容</div>
+          <div style="background:rgba(255,255,255,0.12); border-radius:18px; padding:18px 16px;">
+            <div style="font-size:12px; opacity:0.8; margin-bottom:14px;">下一步</div>
+            <div style="display:flex; justify-content:space-around;">
+              <div style="text-align:center;"><div style="width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-size:18px;">📷</div><div style="font-size:10px; opacity:0.7;">拍照</div></div>
+              <div style="display:flex; align-items:center; opacity:0.5;">›</div>
+              <div style="text-align:center;"><div style="width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-size:18px; color:#F59E0B;">⚙</div><div style="font-size:10px; opacity:0.7;">AI 识别</div></div>
+              <div style="display:flex; align-items:center; opacity:0.5;">›</div>
+              <div style="text-align:center;"><div style="width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-size:18px;">🏆</div><div style="font-size:10px; opacity:0.7;">看成绩</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;"></div>
+        <div style="padding:0 16px;">
+          <button style="width:100%; height:50px; border-radius:14px; background:#F59E0B; color:#fff; font-size:16px; font-weight:600; border:none; margin-bottom:10px;">拍照判分</button>
+          <button style="width:100%; height:44px; border-radius:14px; background:transparent; color:rgba(255,255,255,0.85); font-size:13px; border:1px solid rgba(255,255,255,0.3);">改用手动核对</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">⑥ AI 判分中</div>
+    <div class="phone">
+      <div class="screen">
+        <div class="wx-header">
+          <div class="wx-statusbar">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar solid">
+            <span class="title">AI 判分中</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 24px 24px;">
+          <div style="position:relative; width:140px; height:140px; margin-bottom:32px;">
+            <div style="position:absolute; inset:0; border-radius:50%; border:6px solid #E0E7FF;"></div>
+            <div style="position:absolute; inset:0; border-radius:50%; border:6px solid transparent; border-top-color:#2563EB; border-right-color:#2563EB; animation:spin 1s linear infinite;"></div>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:42px;">🔍</div>
+          </div>
+          <div style="font-size:17px; font-weight:600; color:#0F172A; margin-bottom:6px;">正在识别答卷</div>
+          <div style="font-size:12px; color:#64748b; margin-bottom:32px; text-align:center; line-height:1.6;">含句子识别,通常需要 5–10 秒<br>请稍候,不要退出</div>
+          <div style="width:100%; max-width:240px;">
+            <div style="display:flex; align-items:center; gap:10px; padding:6px 0;">
+              <div style="width:16px; height:16px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <span style="font-size:12px; color:#475569;">图片上传完成</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; padding:6px 0;">
+              <div style="width:16px; height:16px; border-radius:50%; background:#dbeafe; display:flex; align-items:center; justify-content:center;"><div style="width:6px; height:6px; border-radius:50%; background:#2563EB; animation:pulse 1.2s ease-in-out infinite;"></div></div>
+              <span style="font-size:12px; color:#0F172A; font-weight:600;">识别手写内容(含句子)...</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; padding:6px 0;">
+              <div style="width:16px; height:16px; border-radius:50%; background:#f1f5f9;"></div>
+              <span style="font-size:12px; color:#94a3b8;">逐词对比判分</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">⑦ 判分结果(词级错误高亮)</div>
+    <div class="phone">
+      <div class="screen">
+        <div class="wx-header">
+          <div class="wx-statusbar">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar solid">
+            <span class="title">听写完成</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div class="score-card">
+          <div style="font-size:12px; opacity:0.8; margin-bottom:6px;">本次得分</div>
+          <div class="score-num">4 / 6</div>
+          <div class="score-label">正确率 67% · 2 处需要注意</div>
+        </div>
+        <div class="card">
+          <div class="card-title">识别结果</div>
+          <div class="result-item compact"><span class="tag tag-en">EN</span><span class="result-word" style="flex:1;">apple</span><span class="result-badge badge-ok">✓ 正确</span></div>
+          <div class="result-item compact"><span class="tag tag-cn">中</span><span class="result-word" style="flex:1;">苹果</span><span class="result-badge badge-ok">✓ 正确</span></div>
+          <div class="result-item">
+            <span class="tag tag-en">EN</span>
+            <div style="flex:1;">
+              <div class="result-word wrong">oraneg</div>
+              <div class="result-correction"><span style="color:#dc2626;">oraneg</span><span class="arrow">→</span><span class="word-good">orange</span></div>
+            </div>
+            <span class="result-badge badge-err">✗ 拼写错</span>
+          </div>
+          <div class="result-item">
+            <span class="tag tag-en-sent">EN 句</span>
+            <div style="flex:1;">
+              <div class="result-word sentence">I like <span class="word-bad">aples</span> very much.</div>
+              <div class="result-correction"><span style="color:#dc2626;">aples</span><span class="arrow">→</span><span class="word-good">apples</span></div>
+            </div>
+            <span class="result-badge badge-err">✗ 1 处错</span>
+          </div>
+          <div class="result-item">
+            <span class="tag tag-cn-sent">中 句</span>
+            <div style="flex:1;"><div class="result-word sentence">床前明月光,疑是地上霜</div></div>
+            <span class="result-badge badge-ok">✓ 正确</span>
+          </div>
+          <div class="result-item compact"><span class="tag tag-en">EN</span><span class="result-word" style="flex:1;">grape</span><span class="result-badge badge-ok">✓ 正确</span></div>
+        </div>
+        <div class="tip-card">
+          <div class="head">💡 已存入单词本</div>
+          <div class="body">本次听写结果已记录,可在单词本查看与复习。</div>
+        </div>
+        <div style="display:flex; gap:8px; padding:14px 16px 0;">
+          <button style="flex:1; height:44px; border-radius:12px; background:#fff; border:1.5px solid #bfdbfe; color:#2563EB; font-size:13px; font-weight:600;">查看单词本</button>
+          <button style="flex:1; height:44px; border-radius:12px; background:#2563EB; color:#fff; font-size:13px; font-weight:600; border:none;">再来一次</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">⑧ 手动核对(逐题翻牌)</div>
+    <div class="phone">
+      <div class="screen">
+        <div class="wx-header">
+          <div class="wx-statusbar">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar solid">
+            <span class="title">手动核对</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div style="padding:12px 16px 0;">
+          <div style="background:#fff; border-radius:12px; padding:16px;">
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:10px;"><span class="tag tag-en-sent">EN 句</span><span style="font-size:11px; color:#94a3b8;">第 3 题</span></div>
+            <div style="font-size:16px; font-weight:600; color:#0F172A; line-height:1.5; margin-bottom:16px;">I like apples very much.</div>
+            <div style="font-size:11px; color:#64748b; margin-bottom:10px;">请家长核对答卷上是否写对</div>
+            <div style="display:flex; gap:8px;">
+              <button style="flex:1; height:48px; border-radius:12px; background:#dcfce7; border:1.5px solid #16a34a; color:#16a34a; font-size:14px; font-weight:600;">✓ 写对了</button>
+              <button style="flex:1; height:48px; border-radius:12px; background:#fee2e2; border:1.5px solid #dc2626; color:#dc2626; font-size:14px; font-weight:600;">✗ 写错了</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">前面已核对</div>
+          <div class="word-item compact"><span class="tag tag-en">EN</span><span class="word-text" style="font-size:13px;">apple</span><span class="result-badge badge-ok">✓</span></div>
+          <div class="word-item compact"><span class="tag tag-en">EN</span><span class="word-text" style="font-size:13px;">banana</span><span class="result-badge badge-err">✗</span></div>
+        </div>
+        <div style="padding:14px 16px 0;">
+          <button style="width:100%; height:36px; background:transparent; color:#64748b; font-size:12px; border:none;">跳过此题 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">⑨ 单词本(底部 Tab 切换)<span class="updated">UPDATED</span></div>
+    <div class="phone">
+      <div class="screen" style="padding-bottom:74px;">
+        <div class="wx-header">
+          <div class="wx-statusbar">
+            <span class="time">20:57</span>
+            <span class="indicators"><span>●●●●</span><span>📶</span><span>🔋</span></span>
+          </div>
+          <div class="wx-navbar solid">
+            <span class="title">单词听写</span>
+            <div class="mp-capsule"><span class="ic">•••</span><span class="divider"></span><span class="ic">⊙</span></div>
+          </div>
+        </div>
+        <div style="padding:12px 16px 0; display:flex; gap:8px;">
+          <div style="flex:1; padding:10px; background:#2563EB; color:#fff; border-radius:10px; text-align:center; font-size:13px; font-weight:600;">全部记录</div>
+          <div style="flex:1; padding:10px; background:#fff; color:#64748b; border-radius:10px; text-align:center; font-size:13px; font-weight:600;">仅错词</div>
+        </div>
+        <div class="card">
+          <div style="font-family:'Baloo 2',sans-serif; font-size:11px; font-weight:600; color:#2563EB; background:#EFF6FF; border-radius:6px; padding:3px 10px; margin-bottom:8px; display:inline-flex; align-items:center; gap:6px;">
+            <span>2026年5月16日</span>
+            <span style="color:#cbd5e1;">·</span>
+            <span>4 / 6 正确</span>
+          </div>
+          <div class="word-item compact"><span class="tag tag-en">EN</span><span class="word-text" style="font-size:13px;">apple</span><span class="result-badge badge-ok">✓</span></div>
+          <div class="word-item compact"><span class="tag tag-cn">中</span><span class="word-text" style="font-size:13px;">苹果</span><span class="result-badge badge-ok">✓</span></div>
+          <div class="word-item with-sentence">
+            <span class="tag tag-en">EN</span>
+            <div style="flex:1;">
+              <div class="word-text wrong" style="font-size:13px; color:#dc2626;">orange</div>
+              <div style="font-size:10px; color:#94a3b8; margin-top:1px;">写成 oraneg → <span class="word-good">orange</span></div>
+            </div>
+            <span class="result-badge badge-err" style="margin-top:2px;">✗</span>
+          </div>
+          <div class="word-item with-sentence">
+            <span class="tag tag-en-sent">EN 句</span>
+            <div style="flex:1;">
+              <div class="word-text sentence" style="font-size:13px;">I like apples very much.</div>
+              <div style="font-size:10px; color:#94a3b8; margin-top:1px;">aples → <span class="word-good">apples</span></div>
+            </div>
+            <span class="result-badge badge-err" style="margin-top:2px;">✗</span>
+          </div>
+          <div class="word-item compact"><span class="tag tag-cn-sent">中 句</span><span class="word-text sentence" style="font-size:13px; flex:1;">床前明月光,疑是地上霜</span><span class="result-badge badge-ok">✓</span></div>
+          <div class="word-item compact"><span class="tag tag-en">EN</span><span class="word-text" style="font-size:13px;">grape</span><span class="result-badge badge-ok">✓</span></div>
+        </div>
+
+        <div class="card">
+          <div style="font-family:'Baloo 2',sans-serif; font-size:11px; font-weight:600; color:#2563EB; background:#EFF6FF; border-radius:6px; padding:3px 10px; margin-bottom:8px; display:inline-flex; align-items:center; gap:6px;">
+            <span>2026年5月15日</span>
+            <span style="color:#cbd5e1;">·</span>
+            <span>5 / 5 全对 🎉</span>
+          </div>
+          <div class="word-item compact"><span class="tag tag-cn-sent">中 句</span><span class="word-text sentence" style="font-size:13px; flex:1;">床前明月光。</span><span class="result-badge badge-ok">✓</span></div>
+          <div class="word-item compact"><span class="tag tag-en">EN</span><span class="word-text" style="font-size:13px;">school</span><span class="result-badge badge-ok">✓</span></div>
+          <div class="word-item compact"><span class="tag tag-en">EN</span><span class="word-text" style="font-size:13px;">friend</span><span class="result-badge badge-ok">✓</span></div>
+        </div>
+
+        <div style="padding:14px 16px 0;">
+          <button style="width:100%; height:42px; border-radius:12px; background:#fff; border:1.5px solid #bfdbfe; color:#2563EB; font-size:13px; font-weight:600;">用错词重新听写</button>
+        </div>
+
+        <!-- 底部 Tab(高亮单词本) -->
+        <div style="position:absolute; bottom:0; left:0; right:0; height:58px; background:#fff; border-top:1px solid #E4ECFC; display:flex; align-items:center;">
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:#94a3b8;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            <span style="font-size:10px;">听写</span>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:#2563EB;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span style="font-size:10px; font-weight:600;">单词本</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-wrap">
+    <div class="screen-label">⑩ 退出确认弹窗</div>
+    <div class="phone">
+      <div class="modal-bg">
+        <div class="modal-card">
+          <div style="width:56px; height:56px; border-radius:50%; background:#fef3c7; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div style="font-family:'Baloo 2',sans-serif; font-size:17px; font-weight:600; color:#0F172A; margin-bottom:8px;">确定要退出听写吗?</div>
+          <div style="font-size:13px; color:#64748b; line-height:1.6; margin-bottom:20px;">当前已听写到第 3 条 / 共 6 条<br>未完成的进度不会保存</div>
+          <button style="width:100%; height:46px; border-radius:12px; background:#2563EB; color:#fff; font-size:14px; font-weight:600; border:none; margin-bottom:10px;">继续听写</button>
+          <button style="width:100%; height:46px; border-radius:12px; background:#fee2e2; color:#dc2626; font-size:14px; font-weight:600; border:none;">确认退出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

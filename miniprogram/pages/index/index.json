@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "口袋工具",
-  "usingComponents": {
-    "tool-card": "/components/tool-card/index"
-  }
-}

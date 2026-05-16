@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "statusbar-spacer": "/components/statusbar-spacer/index"
+  },
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "white"
+}

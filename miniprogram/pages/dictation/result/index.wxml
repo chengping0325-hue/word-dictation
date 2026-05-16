@@ -1,0 +1,53 @@
+<view class="result-page">
+
+  <!-- 分数卡 -->
+  <view class="score-card">
+    <view class="score-label-top">本次得分</view>
+    <view class="score-num">{{ score.correct }} / {{ score.total }}</view>
+    <view class="score-sub">正确率 {{ score.rate * 100 }}% · {{ suspectCount }} 处需要注意</view>
+  </view>
+
+  <!-- 识别结果 -->
+  <view class="card">
+    <view class="card-title">识别结果</view>
+
+    <view wx:for="{{ items }}" wx:key="id"
+          class="result-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
+      <type-tag type="{{ item.type }}" />
+
+      <view class="flex-1 result-body">
+        <!-- 英文句子且有词级 diff：渲染高亮 -->
+        <block wx:if="{{ item.wordDiff && item.wordDiff.length > 0 }}">
+          <view class="result-word sentence">
+            <text wx:for="{{ item.wordDiff }}" wx:for-item="w" wx:key="word" wx:for-index="wi"
+                  class="{{ !w.ok ? 'word-bad' : '' }}">{{ w.word }}<text wx:if="{{ wi < item.wordDiff.length - 1 }}"> </text></text>
+          </view>
+        </block>
+        <!-- 普通条目 -->
+        <view wx:else class="result-word {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }} {{ !item.isCorrect ? 'wrong' : '' }}">{{ !item.isCorrect && item.userAnswer ? item.userAnswer : item.content }}</view>
+
+        <!-- 错的话提示正确答案 -->
+        <view wx:if="{{ !item.isCorrect }}" class="correction">
+          <text class="bad-text">{{ item.userAnswer || item.content }}</text>
+          <text class="arrow">→</text>
+          <text class="good-text">{{ item.correction || item.content }}</text>
+        </view>
+      </view>
+
+      <view class="result-badge {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}">
+        {{ item.isCorrect ? '✓ 正确' : (item.wordDiff ? '✗ 1 处错' : '✗ 拼写错') }}
+      </view>
+    </view>
+  </view>
+
+  <view class="tip-card">
+    <view class="tip-head">💡 已存入单词本</view>
+    <view class="tip-body">本次听写结果已记录,可在单词本查看与复习。</view>
+  </view>
+
+  <view class="bottom-buttons">
+    <button class="btn-secondary" bindtap="onViewNotebook">查看单词本</button>
+    <button class="btn-blue" bindtap="onRetry">再来一次</button>
+  </view>
+
+</view>

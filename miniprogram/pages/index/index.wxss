@@ -1,7 +1,0 @@
-.page { padding: 24rpx 28rpx; }
-.header { padding: 40rpx 0; }
-.title { font-size: 60rpx; font-weight: 700; color: var(--text-primary); }
-.grid { display: flex; flex-direction: column; gap: 16rpx; }
-.row { display: flex; gap: 16rpx; }
-.tool-card-placeholder { flex: 1; }
-.gap { width: 0; }

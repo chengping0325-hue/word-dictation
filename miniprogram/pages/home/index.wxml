@@ -1,0 +1,22 @@
+<view class="home-page">
+  <view class="tools-grid">
+    <view wx:for="{{ tools }}" wx:key="id"
+          class="tool-card {{ item.disabled ? 'disabled' : '' }}"
+          data-tool="{{ item }}"
+          bindtap="onToolTap">
+      <view class="tool-badge {{ item.badgeClass }}">{{ item.badge }}</view>
+      <view class="tool-icon">{{ item.icon }}</view>
+      <view class="tool-name">{{ item.name }}</view>
+      <view class="tool-desc">{{ item.desc }}</view>
+    </view>
+
+    <view class="tool-card placeholder disabled" bindtap="onPlaceholderTap">
+      <view class="tool-badge">敬请期待</view>
+      <view class="tool-plus">+</view>
+      <view class="tool-name muted">更多工具</view>
+      <view class="tool-desc">陆续上线中</view>
+    </view>
+  </view>
+
+  <view class="home-footer">每一个小工具,都为节省你的时间而生</view>
+</view>

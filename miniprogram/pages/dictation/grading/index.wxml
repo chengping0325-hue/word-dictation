@@ -1,0 +1,24 @@
+<view class="grading-page">
+
+  <view class="loader-wrap">
+    <view class="loader-ring"></view>
+    <view class="loader-icon">🔍</view>
+  </view>
+
+  <view class="big-title">正在识别答卷</view>
+  <view class="sub-title">含句子识别,通常需要 5–10 秒\n请稍候,不要退出</view>
+
+  <view class="steps">
+    <view wx:for="{{ steps }}" wx:key="label" class="step-row {{ item.state }}">
+      <view class="step-dot">
+        <view wx:if="{{ item.state === 'done' }}" class="dot-check">✓</view>
+        <view wx:elif="{{ item.state === 'active' }}" class="dot-active"></view>
+      </view>
+      <view class="step-label">{{ item.label }}</view>
+    </view>
+  </view>
+
+  <!-- Phase 1 占位入口 -->
+  <view class="debug-link" bindtap="onSkipToResult">→ 查看判分结果(Phase 1 占位入口)</view>
+
+</view>

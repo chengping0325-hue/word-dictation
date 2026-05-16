@@ -1,72 +1,113 @@
-/* app.wxss */
+/* app.wxss - 全局样式 */
+
 page {
-  --bg-app: #F2F2F7;
-  --bg-card: #FFFFFF;
-  --text-primary: #1C1C1E;
-  --text-secondary: #8E8E93;
-  --text-label: #6E6E73;
-  --accent-blue: #007AFF;
-  --accent-purple: #5856D6;
-  --danger: #FF3B30;
-  --success: #34C759;
-  --warning: #FF9500;
-  --separator: #E5E5EA;
-  --border: #C7C7CC;
-
-  --radius-card: 24rpx;
-  --radius-button: 24rpx;
-  --radius-chip: 16rpx;
-
-  --shadow-card: 0 4rpx 16rpx rgba(0,0,0,0.04);
-  --shadow-button: 0 4rpx 12rpx rgba(0,122,255,0.25);
-  --shadow-speaker: 0 16rpx 60rpx rgba(0,122,255,0.3);
-
-  background: var(--bg-app);
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  background: #EFF6FF;
+  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, sans-serif;
+  color: #0F172A;
+  font-size: 28rpx;
+  line-height: 1.5;
 }
 
-/* 通用：分组式 section label */
-.section-label {
+/* ── 卡片 ── */
+.card {
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 28rpx;
+  margin: 24rpx 32rpx 0;
+  box-shadow: 0 4rpx 16rpx rgba(37, 99, 235, 0.07);
+}
+
+.card-title {
   font-size: 22rpx;
-  color: var(--text-label);
-  text-transform: uppercase;
-  letter-spacing: 0.8rpx;
-  padding: 24rpx 8rpx 8rpx;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 20rpx;
+  letter-spacing: 1rpx;
 }
 
-/* 通用：分组卡片 */
-.group {
-  background: var(--bg-card);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-}
-
-.group-row {
-  padding: 22rpx 28rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 30rpx;
-  color: var(--text-primary);
-  border-bottom: 1rpx solid var(--separator);
-}
-.group-row:last-child { border-bottom: none; }
-.group-row .muted { color: var(--text-secondary); }
-.group-row .danger { color: var(--danger); }
-.group-row .accent { color: var(--accent-blue); }
-
-/* 通用：主按钮（FAB） */
+/* ── 主按钮（蓝色渐变） ── */
 .btn-primary {
-  background: var(--accent-blue);
+  display: block;
+  width: calc(100% - 64rpx);
+  margin: 28rpx 32rpx 0;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #2563EB, #3b82f6);
   color: #fff;
   font-size: 30rpx;
   font-weight: 600;
   text-align: center;
-  padding: 24rpx;
-  border-radius: var(--radius-button);
-  box-shadow: var(--shadow-button);
-  margin: 0;
+  letter-spacing: 1rpx;
+  box-shadow: 0 8rpx 32rpx rgba(37, 99, 235, 0.35);
 }
-.btn-primary[disabled] { background: #C7C7CC; box-shadow: none; }
+
+.btn-primary[disabled],
+.btn-primary.disabled {
+  opacity: 0.45;
+}
+
+/* 微信原生 button 默认样式重置 */
+.btn-primary::after {
+  border: none;
+}
+
+/* ── 类型标签 ── */
+.tag {
+  display: inline-block;
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+.tag-en { background: #dbeafe; color: #1e40af; }
+.tag-cn { background: #fef3c7; color: #92400e; }
+.tag-en-sent { background: #e0e7ff; color: #3730a3; }
+.tag-cn-sent { background: #fce7f3; color: #9d174d; }
+
+/* ── 提示卡片 ── */
+.tip-card {
+  background: #EFF6FF;
+  border: 1rpx dashed #bfdbfe;
+  border-radius: 24rpx;
+  padding: 24rpx 28rpx;
+  margin: 20rpx 32rpx 0;
+}
+.tip-card .tip-head {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 24rpx;
+  color: #0F172A;
+  font-weight: 600;
+}
+.tip-card .tip-body {
+  font-size: 22rpx;
+  color: #475569;
+  margin-top: 8rpx;
+  line-height: 1.6;
+}
+
+/* ── 结果徽章 ── */
+.result-badge {
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-ok { background: #dcfce7; color: #16a34a; }
+.badge-err { background: #fee2e2; color: #dc2626; }
+
+/* ── 通用工具类 ── */
+.flex-row { display: flex; align-items: center; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-1 { flex: 1; min-width: 0; }
+.text-center { text-align: center; }
+.muted { color: #94a3b8; }
+
+/* 滚动容器留出底部 Tab 高度 */
+.has-tab-bar {
+  padding-bottom: 140rpx;
+}

@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "type-tag": "/components/type-tag/index"
+  },
+  "navigationBarTitleText": "确认识别结果",
+  "backgroundColor": "#EFF6FF"
+}

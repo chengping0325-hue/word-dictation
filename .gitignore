@@ -10,6 +10,9 @@ node_modules/
 # Superpowers brainstorm artifacts
 .superpowers/
 
+# Claude Code 内部记忆（不入库）
+memory/
+
 # Editor
 .vscode/
 .idea/
