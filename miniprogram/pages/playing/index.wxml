@@ -1,34 +1,39 @@
 <view class="page">
   <view class="topbar">
     <text class="progress">{{currentIndex + 1}} / {{words.length}}</text>
+    <view class="eye-btn" bindtap="toggleShow">
+      <text class="eye">{{showWord ? '👁‍🗨' : '👁'}}</text>
+    </view>
   </view>
 
   <view class="center">
-    <text class="playing-label">
-      正在播放第 {{playingCount}} 次 / 共 {{playCount}} 次
-    </text>
+    <text class="counter">单词 {{currentIndex + 1}} / {{words.length}}</text>
 
-    <view class="sound-icon {{isPlaying ? 'playing' : ''}}">
-      <image src="/assets/speaker.svg" class="speaker-img" mode="aspectFit" />
+    <view class="speaker {{isPlaying ? 'pulse' : ''}}">
+      <text class="speaker-ic">🔊</text>
     </view>
+
+    <view class="word-display">
+      <text wx:if="{{showWord}}" class="word-shown">{{words[currentIndex]}}</text>
+      <text wx:else class="word-hidden">{{hiddenMask}}</text>
+    </view>
+
+    <text class="play-stat">正在播放第 {{playingCount}} / {{playCount}} 次</text>
 
     <view class="dots">
       <view wx:for="{{dotsArray}}" wx:key="index"
         class="dot {{index < playedCount ? 'done' : (index === playedCount ? 'active' : '')}}" />
     </view>
 
-    <view class="countdown-card" wx:if="{{!isPlaying && countdown > 0}}">
-      <text class="countdown-label">倒计时</text>
-      <text class="countdown-num">{{countdown}}</text>
-      <text class="countdown-sub">秒后自动播放</text>
+    <view wx:if="{{!isPlaying && countdown > 0}}" class="countdown">
+      <text class="cd-num">{{countdown}}</text>
+      <text class="cd-sub">秒后自动播放</text>
     </view>
 
-    <view class="countdown-card done-card" wx:if="{{finished}}">
-      <text class="countdown-label">听写完成！🎉</text>
-    </view>
+    <view wx:if="{{finished}}" class="finished">听写完成 🎉</view>
   </view>
 
-  <button class="btn-pause" bindtap="togglePause">
-    {{paused ? '继续' : '暂停'}}
-  </button>
+  <view class="pause-wrap">
+    <button class="btn-pause" bindtap="togglePause">{{paused ? '继续' : '暂停'}}</button>
+  </view>
 </view>

@@ -12,22 +12,23 @@ Page({
     isPlaying: false,
     paused: false,
     countdown: 0,
-    finished: false
+    finished: false,
+    showWord: false,
+    hiddenMask: '●●●●'
   },
 
   _stopped: false,
   _countdownTimer: null,
 
   onLoad(options) {
-    const words = JSON.parse(options.words || '[]')
+    const words = JSON.parse(decodeURIComponent(options.words || '[]'))
     const playCount = parseInt(options.playCount || 2)
     const interval = parseInt(options.interval || 3)
     this.setData({
-      words,
-      playCount,
-      interval,
+      words, playCount, interval,
       dotsArray: Array(playCount).fill(0)
     })
+    this.updateMask(0)
     this.startFlow()
   },
 
@@ -36,11 +37,22 @@ Page({
     if (this._countdownTimer) clearInterval(this._countdownTimer)
   },
 
+  toggleShow() {
+    this.setData({ showWord: !this.data.showWord })
+  },
+
+  updateMask(index) {
+    const w = this.data.words[index] || ''
+    const len = Math.max(2, Math.min(6, w.length))
+    this.setData({ hiddenMask: '●'.repeat(len) })
+  },
+
   async startFlow() {
     const { words, playCount, interval } = this.data
     for (let i = 0; i < words.length; i++) {
       if (this._stopped) return
       this.setData({ currentIndex: i, playedCount: 0, playingCount: 1, countdown: 0 })
+      this.updateMask(i)
       for (let p = 0; p < playCount; p++) {
         if (this._stopped) return
         while (this.data.paused) await sleep(0.3)
@@ -53,16 +65,14 @@ Page({
         this.setData({ isPlaying: false, playedCount: p + 1 })
         if (p < playCount - 1) await this.runCountdown(interval)
       }
-      if (i < words.length - 1) {
-        await sleep(1.5)
-      }
+      if (i < words.length - 1) await sleep(1.5)
     }
     if (!this._stopped) {
       this.setData({ finished: true })
       setTimeout(() => {
         if (!this._stopped) {
           wx.redirectTo({
-            url: `/pages/grading/index?words=${JSON.stringify(words)}`
+            url: `/pages/grading/index?words=${encodeURIComponent(JSON.stringify(words))}`
           })
         }
       }, 1500)
@@ -87,13 +97,5 @@ Page({
     })
   },
 
-  togglePause() {
-    this.setData({ paused: !this.data.paused })
-  },
-
-  goBack() {
-    this._stopped = true
-    if (this._countdownTimer) clearInterval(this._countdownTimer)
-    wx.navigateBack()
-  }
+  togglePause() { this.setData({ paused: !this.data.paused }) }
 })
