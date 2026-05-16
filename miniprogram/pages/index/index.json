@@ -1,7 +1,6 @@
 {
   "navigationBarTitleText": "口袋工具",
-  "navigationBarBackgroundColor": "#EDF4FF",
   "usingComponents": {
-    "tool-card": "../../components/tool-card/index"
+    "tool-card": "/components/tool-card/index"
   }
 }
