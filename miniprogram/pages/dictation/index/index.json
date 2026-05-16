@@ -1,6 +1,7 @@
 {
   "usingComponents": {
     "word-item": "/components/word-item/index",
+    "type-tag": "/components/type-tag/index",
     "dictation-tab-bar": "/components/tab-bar/index"
   },
   "navigationBarTitleText": "单词听写",

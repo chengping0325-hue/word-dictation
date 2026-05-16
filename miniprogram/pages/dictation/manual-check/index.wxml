@@ -1,9 +1,9 @@
 <view class="manual-check">
 
-  <view class="question-card">
+  <view wx:if="{{ currentItem }}" class="question-card">
     <view class="q-head">
       <type-tag type="{{ currentItem.type }}" />
-      <text class="q-num">第 {{ currentIndex + 1 }} 题</text>
+      <text class="q-num">第 {{ currentIndex + 1 }} / {{ total }} 题</text>
     </view>
     <view class="q-content">{{ currentItem.content }}</view>
     <view class="q-hint">请家长核对答卷上是否写对</view>
@@ -13,9 +13,9 @@
     </view>
   </view>
 
-  <view class="card">
-    <view class="card-title">前面已核对</view>
-    <view wx:for="{{ checked }}" wx:key="id" class="word-item">
+  <view wx:if="{{ checked.length > 0 }}" class="card">
+    <view class="card-title">前面已核对 · {{ checked.length }} 条</view>
+    <view wx:for="{{ checked }}" wx:key="content" class="word-item">
       <type-tag type="{{ item.type }}" />
       <view class="flex-1 c-text">{{ item.content }}</view>
       <view class="result-badge {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}">{{ item.isCorrect ? '✓' : '✗' }}</view>
@@ -23,8 +23,5 @@
   </view>
 
   <view class="skip-row" bindtap="onSkip">跳过此题 →</view>
-
-  <!-- Phase 1 占位入口 -->
-  <view class="debug-link" bindtap="onJumpToResult">→ 模拟全部核对完毕,看判分结果</view>
 
 </view>

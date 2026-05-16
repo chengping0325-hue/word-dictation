@@ -1,30 +1,38 @@
-// 判分结果 - Phase 1 静态版
+// pages/dictation/result/index.js
 Page({
   data: {
-    score: { correct: 4, total: 6, rate: 0.67 },
-    items: [
-      { id: 1, content: 'apple', type: 'en_word', isCorrect: true },
-      { id: 2, content: '苹果', type: 'cn_word', isCorrect: true },
-      { id: 3, content: 'orange', type: 'en_word', isCorrect: false, userAnswer: 'oraneg' },
-      { id: 4, content: 'I like apples very much.', type: 'en_sentence', isCorrect: false,
-        wordDiff: [
-          { word: 'I', ok: true },
-          { word: 'like', ok: true },
-          { word: 'aples', ok: false, expected: 'apples' },
-          { word: 'very', ok: true },
-          { word: 'much', ok: true }
-        ],
-        userAnswer: 'aples', correction: 'apples' },
-      { id: 5, content: '床前明月光,疑是地上霜', type: 'cn_sentence', isCorrect: true },
-      { id: 6, content: 'grape', type: 'en_word', isCorrect: true }
-    ],
-    suspectCount: 2
+    score: { correct: 0, total: 0, rate: 0 },
+    items: [],
+    rateText: '0',
+    wrongCount: 0
+  },
+
+  onLoad() {
+    const app = getApp()
+    const r = app.globalData.currentResult
+    if (!r) {
+      wx.showToast({ title: '没有判分结果', icon: 'none' })
+      setTimeout(() => wx.navigateBack(), 600)
+      return
+    }
+    const wrongCount = (r.items || []).filter(it => !it.isCorrect).length
+    this.setData({
+      score: r.score || { correct: 0, total: 0, rate: 0 },
+      items: r.items || [],
+      rateText: Math.round((r.score && r.score.rate || 0) * 100).toString(),
+      wrongCount
+    })
   },
 
   onViewNotebook() {
     wx.reLaunch({ url: '/pages/dictation/notebook/index' })
   },
+
   onRetry() {
+    // 清掉当前听写，主页就不会自动填充
+    const app = getApp()
+    app.globalData.currentDictation = null
+    app.globalData.currentResult = null
     wx.reLaunch({ url: '/pages/dictation/index/index' })
   }
 })

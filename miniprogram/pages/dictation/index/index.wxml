@@ -5,21 +5,27 @@
     <view class="card-title">添加内容</view>
     <view class="input-row">
       <view class="input-wrap">
-        <input class="input" placeholder="输入单词或句子" value="{{ inputValue }}" bindinput="onInput" />
+        <input class="input" placeholder="输入单词或句子" value="{{ inputValue }}" bindinput="onInput" confirm-type="done" />
         <view class="camera-btn" bindtap="onCameraTap">
           <view class="camera-icon">📷</view>
         </view>
       </view>
       <button class="add-btn" bindtap="onAdd">添加</button>
     </view>
-    <view class="input-hint">支持单词、句子、中英文 · 系统自动识别</view>
+    <view class="input-hint-row">
+      <view wx:if="{{ typeLabel }}" class="preview-tag-wrap">
+        <type-tag type="{{ currentType }}" />
+        <view class="preview-hint">已识别为该类型</view>
+      </view>
+      <view wx:else class="input-hint">支持单词、句子、中英文 · 系统自动识别</view>
+    </view>
   </view>
 
   <!-- 听写清单 -->
   <view class="card">
     <view class="list-header">
       <view class="card-title">听写清单 · {{ pendingList.length }} 条</view>
-      <view class="clear-all" bindtap="onClearAll">一键清空</view>
+      <view wx:if="{{ pendingList.length > 0 }}" class="clear-all" bindtap="onClearAll">一键清空</view>
     </view>
     <view wx:if="{{ pendingList.length === 0 }}" class="empty">
       <view class="empty-icon">✎</view>
@@ -32,7 +38,7 @@
         wx:key="id"
         item="{{ item }}"
         showDrag="{{ true }}"
-        showDelete="{{ false }}"
+        showDelete="{{ true }}"
         bind:delete="onDelete"
       />
     </block>
@@ -63,7 +69,7 @@
   </view>
 
   <!-- 开始按钮 -->
-  <button class="btn-primary {{ pendingList.length === 0 ? 'disabled' : '' }}" bindtap="onStart">开始听写</button>
+  <button class="btn-primary {{ pendingList.length === 0 ? 'disabled' : '' }}" bindtap="onStart" disabled="{{ pendingList.length === 0 }}">开始听写</button>
 
   <!-- 底部 Tab -->
   <dictation-tab-bar active="dictation" />

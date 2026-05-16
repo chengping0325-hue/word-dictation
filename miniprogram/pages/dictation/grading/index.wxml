@@ -18,7 +18,4 @@
     </view>
   </view>
 
-  <!-- Phase 1 占位入口 -->
-  <view class="debug-link" bindtap="onSkipToResult">→ 查看判分结果(Phase 1 占位入口)</view>
-
 </view>
