@@ -1,0 +1,11 @@
+<view class="tabbar">
+  <view class="tab {{active === 'listen' ? 'on' : ''}}" bindtap="goListen">
+    <text class="ic">🎧</text>
+    <text class="lbl">听写</text>
+  </view>
+  <view class="tab {{active === 'wordbook' ? 'on' : ''}}" bindtap="goWordbook">
+    <text class="ic">📖</text>
+    <text class="lbl">单词本</text>
+  </view>
+</view>
+<view class="tabbar-spacer"></view>
