@@ -7,11 +7,11 @@
     "pages/profile/index"
   ],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#EDF4FF",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#F2F2F7",
     "navigationBarTitleText": "口袋工具",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#EDF4FF"
+    "backgroundColor": "#F2F2F7"
   },
   "cloud": true,
   "sitemapLocation": "sitemap.json"

@@ -1,46 +1,72 @@
+/* app.wxss */
 page {
-  --color-primary: #2563EB;
-  --color-secondary: #F59E0B;
-  --color-bg: #EDF4FF;
-  --color-fg: #0F172A;
-  --color-muted: #64748B;
-  --color-error: #DC2626;
-  --color-success: #16A34A;
-  --color-white: #FFFFFF;
-  --color-border: #E4ECFC;
-  --radius-card: 16rpx;
-  --shadow-card: 0 2rpx 16rpx rgba(37,99,235,0.07);
+  --bg-app: #F2F2F7;
+  --bg-card: #FFFFFF;
+  --text-primary: #1C1C1E;
+  --text-secondary: #8E8E93;
+  --text-label: #6E6E73;
+  --accent-blue: #007AFF;
+  --accent-purple: #5856D6;
+  --danger: #FF3B30;
+  --success: #34C759;
+  --warning: #FF9500;
+  --separator: #E5E5EA;
+  --border: #C7C7CC;
 
-  background-color: var(--color-bg);
-  font-family: -apple-system, "PingFang SC", sans-serif;
-  color: var(--color-fg);
-  font-size: 28rpx;
-  box-sizing: border-box;
+  --radius-card: 24rpx;
+  --radius-button: 24rpx;
+  --radius-chip: 16rpx;
+
+  --shadow-card: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  --shadow-button: 0 4rpx 12rpx rgba(0,122,255,0.25);
+  --shadow-speaker: 0 16rpx 60rpx rgba(0,122,255,0.3);
+
+  background: var(--bg-app);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
 }
 
-.card {
-  background: var(--color-white);
+/* 通用：分组式 section label */
+.section-label {
+  font-size: 22rpx;
+  color: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.8rpx;
+  padding: 24rpx 8rpx 8rpx;
+}
+
+/* 通用：分组卡片 */
+.group {
+  background: var(--bg-card);
   border-radius: var(--radius-card);
-  padding: 32rpx;
-  margin: 24rpx 32rpx 0;
+  overflow: hidden;
   box-shadow: var(--shadow-card);
 }
 
-.btn-primary {
-  display: block;
-  width: calc(100% - 64rpx);
-  margin: 32rpx 32rpx 0;
-  height: 96rpx;
-  line-height: 96rpx;
-  border-radius: 24rpx;
-  background: var(--color-primary);
-  color: var(--color-white);
-  font-size: 32rpx;
-  font-weight: 700;
-  text-align: center;
-  border: none;
+.group-row {
+  padding: 22rpx 28rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 30rpx;
+  color: var(--text-primary);
+  border-bottom: 1rpx solid var(--separator);
 }
+.group-row:last-child { border-bottom: none; }
+.group-row .muted { color: var(--text-secondary); }
+.group-row .danger { color: var(--danger); }
+.group-row .accent { color: var(--accent-blue); }
 
-.btn-primary[disabled] {
-  opacity: 0.4;
+/* 通用：主按钮（FAB） */
+.btn-primary {
+  background: var(--accent-blue);
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+  padding: 24rpx;
+  border-radius: var(--radius-button);
+  box-shadow: var(--shadow-button);
+  margin: 0;
 }
+.btn-primary[disabled] { background: #C7C7CC; box-shadow: none; }
