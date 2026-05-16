@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/dictation/index",
+    "pages/playing/index",
+    "pages/grading/index",
+    "pages/profile/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#EDF4FF",
+    "navigationBarTitleText": "口袋工具",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#EDF4FF"
+  },
+  "cloud": true,
+  "sitemapLocation": "sitemap.json"
+}

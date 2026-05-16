@@ -1,0 +1,24 @@
+.page { min-height: 100vh; background: var(--color-bg); padding-bottom: 48rpx; }
+.card-title { font-size: 22rpx; font-weight: 700; color: var(--color-muted); text-transform: uppercase; letter-spacing: 1rpx; margin-bottom: 20rpx; }
+.upload-area { height: 200rpx; background: #F8FAFF; border-radius: 20rpx; border: 3rpx dashed #BFDBFE; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12rpx; }
+.upload-icon { font-size: 56rpx; }
+.upload-text { font-size: 28rpx; color: var(--color-primary); font-weight: 700; }
+.upload-hint { font-size: 22rpx; color: var(--color-muted); }
+.progress-wrap { margin-top: 24rpx; }
+.progress-bar { background: #E4ECFC; border-radius: 8rpx; height: 12rpx; overflow: hidden; }
+.progress-inner { height: 100%; background: var(--color-primary); width: 60%; animation: progress 1.5s ease-in-out infinite; }
+@keyframes progress { 0%{width:10%} 50%{width:85%} 100%{width:10%} }
+.progress-text { font-size: 24rpx; color: var(--color-muted); margin-top: 12rpx; display: block; text-align: center; }
+.score-card { background: linear-gradient(135deg, #2563EB, #3B82F6); border-radius: 24rpx; margin: 24rpx 32rpx 0; padding: 40rpx; text-align: center; color: #fff; }
+.score-label { display: block; font-size: 24rpx; opacity: 0.8; margin-bottom: 12rpx; }
+.score-num { display: block; font-size: 80rpx; font-weight: 700; color: #F59E0B; }
+.score-pct { display: block; font-size: 24rpx; opacity: 0.8; margin-top: 8rpx; }
+.result-item { display: flex; align-items: center; padding: 20rpx 0; border-bottom: 1rpx solid var(--color-border); }
+.result-item:last-child { border-bottom: none; }
+.result-left { flex: 1; }
+.result-word { font-size: 30rpx; font-weight: 700; }
+.result-word.wrong { color: var(--color-error); }
+.result-correction { display: block; font-size: 22rpx; color: var(--color-muted); margin-top: 4rpx; }
+.result-badge { width: 56rpx; height: 56rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24rpx; font-weight: 700; flex-shrink: 0; }
+.result-badge.ok { background: #DCFCE7; color: var(--color-success); }
+.result-badge.err { background: #FEE2E2; color: var(--color-error); }

@@ -1,0 +1,6 @@
+<view class="tool-card {{disabled ? 'disabled' : ''}}" bindtap="onTap">
+  <view class="icon">{{icon}}</view>
+  <view class="name">{{name}}</view>
+  <view class="desc">{{desc}}</view>
+  <view wx:if="{{disabled}}" class="soon">敬请期待</view>
+</view>

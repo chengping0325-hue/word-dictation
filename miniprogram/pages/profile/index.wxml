@@ -1,0 +1,29 @@
+<view class="page">
+
+  <!-- 用户信息 -->
+  <view class="user-card">
+    <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" />
+    <text class="nickname">{{nickname}}</text>
+  </view>
+
+  <!-- 单词本 -->
+  <view class="section-title">单词本</view>
+
+  <view wx:if="{{sessions.length === 0}}" class="card empty">
+    <text class="empty-title">还没有听写记录</text>
+    <text class="empty-desc">快去试试吧～</text>
+  </view>
+
+  <view wx:for="{{sessions}}" wx:key="_id" class="card session-card">
+    <view class="session-header">
+      <text class="session-date">{{item.dateStr}}</text>
+      <text class="session-score">{{item.score}}/{{item.total}} 正确</text>
+    </view>
+    <view wx:for="{{item.result}}" wx:for-item="word" wx:key="index" class="word-row">
+      <text class="word-name {{word.correct ? '' : 'wrong'}}">{{word.original}}</text>
+      <text wx:if="{{!word.correct}}" class="correction">你写了「{{word.written}}」</text>
+      <view class="badge {{word.correct ? 'ok' : 'err'}}">{{word.correct ? '✓' : '✗'}}</view>
+    </view>
+  </view>
+
+</view>

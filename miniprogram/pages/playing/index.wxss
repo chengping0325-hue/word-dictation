@@ -1,0 +1,18 @@
+.page { min-height: 100vh; background: linear-gradient(160deg, #1E3A8A 0%, #2563EB 100%); color: #fff; display: flex; flex-direction: column; }
+.topbar { display: flex; align-items: center; justify-content: center; padding: 32rpx 40rpx; }
+.progress { font-size: 28rpx; opacity: 0.9; font-weight: 600; }
+.center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 48rpx; }
+.playing-label { font-size: 24rpx; opacity: 0.7; margin-bottom: 64rpx; }
+.sound-icon { width: 160rpx; height: 160rpx; border-radius: 50%; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 48rpx; transition: box-shadow 0.3s; }
+.sound-icon.playing { box-shadow: 0 0 40rpx rgba(255,255,255,0.4), 0 0 80rpx rgba(245,158,11,0.3); background: rgba(255,255,255,0.2); }
+.speaker-img { width: 96rpx; height: 96rpx; }
+.dots { display: flex; gap: 20rpx; margin-bottom: 80rpx; }
+.dot { width: 24rpx; height: 24rpx; border-radius: 50%; background: rgba(255,255,255,0.3); }
+.dot.active { background: #F59E0B; }
+.dot.done { background: rgba(255,255,255,0.7); }
+.countdown-card { background: rgba(255,255,255,0.12); border-radius: 32rpx; padding: 40rpx 80rpx; text-align: center; }
+.done-card { padding: 40rpx 60rpx; }
+.countdown-label { display: block; font-size: 24rpx; opacity: 0.7; margin-bottom: 16rpx; }
+.countdown-num { display: block; font-size: 96rpx; font-weight: 700; color: #F59E0B; }
+.countdown-sub { display: block; font-size: 24rpx; opacity: 0.6; }
+.btn-pause { position: fixed; bottom: 80rpx; left: 50%; transform: translateX(-50%); width: 240rpx; height: 80rpx; line-height: 80rpx; background: rgba(255,255,255,0.2); color: #fff; border-radius: 40rpx; font-size: 28rpx; border: none; }

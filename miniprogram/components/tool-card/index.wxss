@@ -1,0 +1,27 @@
+:host {
+  flex: 1;
+  min-width: 0;
+}
+
+.tool-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 40rpx 24rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 16rpx rgba(37,99,235,0.07);
+  position: relative;
+  overflow: hidden;
+}
+.tool-card.disabled { opacity: 0.5; }
+.icon { font-size: 64rpx; margin-bottom: 16rpx; }
+.name { font-size: 28rpx; font-weight: 700; color: #0F172A; margin-bottom: 8rpx; }
+.desc { font-size: 22rpx; color: #94A3B8; }
+.soon {
+  position: absolute;
+  top: 16rpx; right: 16rpx;
+  background: #F1F5F9;
+  color: #94A3B8;
+  font-size: 18rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+}

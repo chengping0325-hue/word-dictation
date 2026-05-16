@@ -1,0 +1,34 @@
+<view class="page">
+  <view class="topbar">
+    <text class="progress">{{currentIndex + 1}} / {{words.length}}</text>
+  </view>
+
+  <view class="center">
+    <text class="playing-label">
+      正在播放第 {{playingCount}} 次 / 共 {{playCount}} 次
+    </text>
+
+    <view class="sound-icon {{isPlaying ? 'playing' : ''}}">
+      <image src="/assets/speaker.svg" class="speaker-img" mode="aspectFit" />
+    </view>
+
+    <view class="dots">
+      <view wx:for="{{dotsArray}}" wx:key="index"
+        class="dot {{index < playedCount ? 'done' : (index === playedCount ? 'active' : '')}}" />
+    </view>
+
+    <view class="countdown-card" wx:if="{{!isPlaying && countdown > 0}}">
+      <text class="countdown-label">倒计时</text>
+      <text class="countdown-num">{{countdown}}</text>
+      <text class="countdown-sub">秒后自动播放</text>
+    </view>
+
+    <view class="countdown-card done-card" wx:if="{{finished}}">
+      <text class="countdown-label">听写完成！🎉</text>
+    </view>
+  </view>
+
+  <button class="btn-pause" bindtap="togglePause">
+    {{paused ? '继续' : '暂停'}}
+  </button>
+</view>

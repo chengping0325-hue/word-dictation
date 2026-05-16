@@ -1,0 +1,67 @@
+<view class="page">
+  <view class="dictation-header">
+    <view />
+    <view class="wordbook-btn" bindtap="goWordBook">单词本</view>
+  </view>
+
+  <!-- 添加单词 -->
+  <view class="card">
+    <view class="card-title">添加单词</view>
+    <view class="input-row">
+      <input class="word-input" value="{{inputWord}}" bindinput="onInput"
+        placeholder="输入英文单词" confirm-type="next" bindconfirm="addWord" />
+      <button class="btn-add" bindtap="addWord">添加</button>
+    </view>
+    <view class="upload-row">
+      <button class="btn-photo" bindtap="photoOCR">📷 拍照识别</button>
+    </view>
+  </view>
+
+  <!-- 单词列表 -->
+  <view class="card">
+    <view class="list-header">
+      <text class="card-title">单词列表 · {{words.length}} 个</text>
+      <text wx:if="{{words.length > 0}}" class="btn-clear" bindtap="clearAll">一键清空</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{words.length === 0}}" class="empty">
+      <text class="empty-icon">✏️</text>
+      <text class="empty-title">还没有单词</text>
+      <text class="empty-desc">手动输入或拍照上传，即可开始听写</text>
+    </view>
+
+    <!-- 单词列表 -->
+    <view wx:for="{{words}}" wx:key="index" class="word-item">
+      <text class="word-text">{{item}}</text>
+      <view class="btn-del" bindtap="deleteWord" data-index="{{index}}">×</view>
+    </view>
+  </view>
+
+  <!-- 设置 -->
+  <view class="card {{words.length === 0 ? 'dimmed' : ''}}">
+    <view class="card-title">听写设置</view>
+    <view class="setting-row">
+      <text class="setting-label">朗读次数</text>
+      <view class="stepper">
+        <button class="stepper-btn" bindtap="decPlayCount">−</button>
+        <text class="stepper-val">{{playCount}} 次</text>
+        <button class="stepper-btn" bindtap="incPlayCount">+</button>
+      </view>
+    </view>
+    <view class="setting-row">
+      <text class="setting-label">间隔时间</text>
+      <view class="stepper">
+        <button class="stepper-btn" bindtap="decInterval">−</button>
+        <text class="stepper-val">{{interval}} 秒</text>
+        <button class="stepper-btn" bindtap="incInterval">+</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 开始按钮 -->
+  <button class="btn-primary" disabled="{{words.length === 0}}" bindtap="startDictation">
+    开始听写
+  </button>
+
+</view>

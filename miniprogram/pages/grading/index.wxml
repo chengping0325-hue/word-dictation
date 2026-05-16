@@ -1,0 +1,44 @@
+<view class="page">
+
+  <!-- 上传区 -->
+  <view class="card" wx:if="{{!hasResult}}">
+    <view class="card-title">上传答卷</view>
+    <view class="upload-area" bindtap="uploadAnswer">
+      <text class="upload-icon">📷</text>
+      <text class="upload-text">拍照 / 从相册选择</text>
+      <text class="upload-hint">拍下你的手写答案</text>
+    </view>
+    <view wx:if="{{loading}}" class="progress-wrap">
+      <view class="progress-bar">
+        <view class="progress-inner" />
+      </view>
+      <text class="progress-text">识别中，请稍候...</text>
+    </view>
+  </view>
+
+  <!-- 得分卡 -->
+  <view wx:if="{{hasResult}}" class="score-card">
+    <text class="score-label">本次得分</text>
+    <text class="score-num">{{correctCount}} / {{words.length}}</text>
+    <text class="score-pct">正确率 {{scorePercent}}%</text>
+  </view>
+
+  <!-- 结果列表 -->
+  <view wx:if="{{hasResult}}" class="card">
+    <view class="card-title">识别结果</view>
+    <view wx:for="{{results}}" wx:key="index" class="result-item">
+      <view class="result-left">
+        <text class="result-word {{item.correct ? '' : 'wrong'}}">{{item.original}}</text>
+        <text wx:if="{{!item.correct}}" class="result-correction">你写了「{{item.written}}」→ 正确：{{item.original}}</text>
+      </view>
+      <view class="result-badge {{item.correct ? 'ok' : 'err'}}">
+        {{item.correct ? '✓' : '✗'}}
+      </view>
+    </view>
+  </view>
+
+  <button wx:if="{{hasResult}}" class="btn-primary" bindtap="finish">
+    完成，查看单词本
+  </button>
+
+</view>

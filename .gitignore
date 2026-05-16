@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# WeChat dev tools
+project.private.config.json
+
+# Node
+node_modules/
+
+# Superpowers brainstorm artifacts
+.superpowers/
+
+# Editor
+.vscode/
+.idea/

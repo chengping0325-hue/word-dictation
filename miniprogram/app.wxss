@@ -1,0 +1,46 @@
+page {
+  --color-primary: #2563EB;
+  --color-secondary: #F59E0B;
+  --color-bg: #EDF4FF;
+  --color-fg: #0F172A;
+  --color-muted: #64748B;
+  --color-error: #DC2626;
+  --color-success: #16A34A;
+  --color-white: #FFFFFF;
+  --color-border: #E4ECFC;
+  --radius-card: 16rpx;
+  --shadow-card: 0 2rpx 16rpx rgba(37,99,235,0.07);
+
+  background-color: var(--color-bg);
+  font-family: -apple-system, "PingFang SC", sans-serif;
+  color: var(--color-fg);
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius-card);
+  padding: 32rpx;
+  margin: 24rpx 32rpx 0;
+  box-shadow: var(--shadow-card);
+}
+
+.btn-primary {
+  display: block;
+  width: calc(100% - 64rpx);
+  margin: 32rpx 32rpx 0;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: 24rpx;
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  border: none;
+}
+
+.btn-primary[disabled] {
+  opacity: 0.4;
+}

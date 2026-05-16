@@ -1,0 +1,25 @@
+.page { min-height: 100vh; background: var(--color-bg); padding-bottom: 48rpx; }
+.dictation-header { display: flex; justify-content: flex-end; padding: 16rpx 32rpx 0; }
+.wordbook-btn { font-size: 26rpx; color: var(--color-primary); font-weight: 700; background: #EFF6FF; padding: 10rpx 28rpx; border-radius: 32rpx; }
+.card-title { font-size: 22rpx; font-weight: 700; color: var(--color-muted); text-transform: uppercase; letter-spacing: 1rpx; margin-bottom: 20rpx; }
+.input-row { display: flex; gap: 16rpx; align-items: center; }
+.word-input { flex: 1; height: 80rpx; background: #F8FAFF; border-radius: 12rpx; padding: 0 24rpx; font-size: 28rpx; border: 2rpx solid var(--color-border); }
+.btn-add { height: 80rpx; line-height: 80rpx; padding: 0 32rpx; background: var(--color-primary); color: #fff; border-radius: 12rpx; font-size: 28rpx; border: none; }
+.upload-row { margin-top: 16rpx; }
+.btn-photo { width: 100%; height: 80rpx; line-height: 80rpx; background: #F0F4FF; color: var(--color-primary); border-radius: 12rpx; font-size: 28rpx; border: 2rpx dashed #BFDBFE; }
+.list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20rpx; }
+.btn-clear { font-size: 24rpx; color: var(--color-error); font-weight: 700; }
+.empty { padding: 48rpx 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12rpx; }
+.empty-icon { font-size: 64rpx; }
+.empty-title { font-size: 28rpx; font-weight: 700; }
+.empty-desc { font-size: 24rpx; color: var(--color-muted); }
+.word-item { display: flex; align-items: center; padding: 20rpx 0; border-bottom: 1rpx solid var(--color-border); }
+.word-item:last-child { border-bottom: none; }
+.word-text { flex: 1; font-size: 32rpx; font-weight: 700; }
+.btn-del { width: 48rpx; height: 48rpx; border-radius: 50%; background: #FEE2E2; color: var(--color-error); display: flex; align-items: center; justify-content: center; font-size: 28rpx; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; padding: 16rpx 0; }
+.setting-label { font-size: 28rpx; color: var(--color-muted); font-weight: 700; }
+.stepper { display: flex; align-items: center; gap: 24rpx; }
+.stepper-btn { width: 56rpx; height: 56rpx; border-radius: 50%; background: #EFF6FF; border: 2rpx solid #BFDBFE; color: var(--color-primary); font-size: 32rpx; display: flex; align-items: center; justify-content: center; padding: 0; }
+.stepper-val { font-size: 32rpx; font-weight: 700; min-width: 80rpx; text-align: center; }
+.dimmed { opacity: 0.4; pointer-events: none; }
