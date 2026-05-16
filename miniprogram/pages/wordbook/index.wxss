@@ -1,0 +1,37 @@
+.page { padding: 0 28rpx 24rpx; }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 200rpx 40rpx;
+  gap: 16rpx;
+}
+.empty-icon { font-size: 80rpx; }
+.empty-text { font-size: 30rpx; color: var(--text-primary); }
+.empty-sub { font-size: 24rpx; color: var(--text-secondary); }
+
+.sess {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 24rpx;
+  margin-top: 16rpx;
+  box-shadow: var(--shadow-card);
+}
+.sess-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 26rpx;
+  margin-bottom: 16rpx;
+}
+.sess-head .date { color: var(--text-primary); font-weight: 500; }
+.sess-head .score { font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 8rpx; }
+.chip {
+  background: #F2F2F7;
+  padding: 6rpx 14rpx;
+  border-radius: var(--radius-chip);
+  font-size: 22rpx;
+  color: var(--text-primary);
+}
+.chip.wrong { background: #FFE5E5; color: var(--danger); }

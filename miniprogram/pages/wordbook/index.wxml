@@ -1,0 +1,21 @@
+<view class="page">
+  <view wx:if="{{sessions.length === 0 && !loading}}" class="empty">
+    <text class="empty-icon">📖</text>
+    <text class="empty-text">还没有听写记录</text>
+    <text class="empty-sub">完成一次听写后会自动出现在这里</text>
+  </view>
+
+  <view wx:for="{{sessions}}" wx:key="_id" class="sess">
+    <view class="sess-head">
+      <text class="date">{{item.dateStr}}</text>
+      <text class="score" style="color: {{item.scoreColor}}">{{item.score}} / {{item.total}} 正确</text>
+    </view>
+    <view class="chips">
+      <view wx:for="{{item.result}}" wx:for-item="w" wx:key="index" class="chip {{w.correct ? '' : 'wrong'}}">
+        {{w.original}} {{w.correct ? '✓' : '✗'}}
+      </view>
+    </view>
+  </view>
+
+  <inner-tabbar active="wordbook" />
+</view>

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "单词本",
+  "usingComponents": {
+    "inner-tabbar": "/components/inner-tabbar/index"
+  }
+}
