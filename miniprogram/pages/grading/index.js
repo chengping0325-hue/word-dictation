@@ -1,53 +1,40 @@
-const { saveSession } = require('../../utils/db')
+const { recognizeWords } = require('../../utils/ocr')
 const { compareWords } = require('../../utils/compare')
+const { saveSession } = require('../../utils/db')
 
 Page({
   data: {
+    state: 'upload',  // 'upload' | 'loading' | 'result'
     words: [],
     results: [],
     correctCount: 0,
     scorePercent: 0,
-    hasResult: false,
-    loading: false
+    playCount: 2,
+    interval: 3
   },
 
   onLoad(options) {
-    const words = JSON.parse(options.words || '[]')
+    const words = JSON.parse(decodeURIComponent(options.words || '[]'))
     this.setData({ words })
   },
 
   uploadAnswer() {
-    if (this.data.loading) return
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
-      success: (res) => {
-        const tempFilePath = res.tempFiles[0].tempFilePath
-        this.runOCR(tempFilePath)
+      success: async (res) => {
+        this.setData({ state: 'loading' })
+        try {
+          const recognized = await recognizeWords(res.tempFiles[0].tempFilePath)
+          this.processResult(recognized)
+        } catch (e) {
+          console.error('OCR error', e)
+          wx.showToast({ title: e.message || '识别失败，请重试', icon: 'none' })
+          this.setData({ state: 'upload' })
+        }
       }
     })
-  },
-
-  async runOCR(filePath) {
-    this.setData({ loading: true })
-    try {
-      const uploadRes = await wx.cloud.uploadFile({
-        cloudPath: `ocr/${Date.now()}.jpg`,
-        filePath
-      })
-      const ocrRes = await wx.cloud.callFunction({
-        name: 'ocrWords',
-        data: { fileID: uploadRes.fileID }
-      })
-      const writtenWords = ocrRes.result.words || []
-      this.processResult(writtenWords)
-    } catch (e) {
-      console.error('OCR error', e)
-      wx.showToast({ title: 'OCR 识别失败，请重试', icon: 'none' })
-    } finally {
-      this.setData({ loading: false })
-    }
   },
 
   processResult(writtenWords) {
@@ -55,12 +42,14 @@ Page({
     const results = compareWords(words, writtenWords)
     const correctCount = results.filter(r => r.correct).length
     const scorePercent = Math.round((correctCount / words.length) * 100)
-    this.setData({ results, correctCount, scorePercent, hasResult: true })
-    saveSession({ words, result: results, score: correctCount, total: words.length })
-      .catch(e => console.error('保存记录失败', e))
+    this.setData({ results, correctCount, scorePercent, state: 'result' })
+    saveSession({
+      words, result: results, score: correctCount, total: words.length,
+      settings: { playCount: this.data.playCount, interval: this.data.interval }
+    }).catch(e => console.error('保存记录失败', e))
   },
 
   finish() {
-    wx.navigateTo({ url: '/pages/profile/index' })
+    wx.redirectTo({ url: '/pages/wordbook/index' })
   }
 })
