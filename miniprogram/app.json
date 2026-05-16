@@ -4,8 +4,7 @@
     "pages/dictation/index",
     "pages/playing/index",
     "pages/grading/index",
-    "pages/wordbook/index",
-    "pages/profile/index"
+    "pages/wordbook/index"
   ],
   "window": {
     "backgroundTextStyle": "dark",
