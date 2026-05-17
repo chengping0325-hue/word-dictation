@@ -52,6 +52,11 @@
   font-weight: 500;
 }
 .result-word.wrong { color: #dc2626; }
+.result-word.not-found {
+  color: #94a3b8;
+  font-weight: 500;
+  font-style: italic;
+}
 
 .word-bad {
   background: #fee2e2;
@@ -63,12 +68,11 @@
 }
 
 .correction {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: #64748b;
   margin-top: 8rpx;
 }
-.correction .bad-text { color: #dc2626; }
-.correction .arrow { color: #94a3b8; margin: 0 8rpx; }
+.correction-label { color: #94a3b8; margin-right: 8rpx; }
 .correction .good-text { color: #16a34a; font-weight: 600; }
 
 .bottom-buttons {

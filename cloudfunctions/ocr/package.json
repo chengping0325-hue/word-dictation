@@ -1,0 +1,9 @@
+{
+  "name": "ocr",
+  "version": "1.0.0",
+  "description": "微信通用印刷体 OCR 转发",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

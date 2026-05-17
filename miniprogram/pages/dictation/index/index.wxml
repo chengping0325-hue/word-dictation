@@ -37,7 +37,6 @@
         wx:for="{{ pendingList }}"
         wx:key="id"
         item="{{ item }}"
-        showDrag="{{ true }}"
         showDelete="{{ true }}"
         bind:delete="onDelete"
       />

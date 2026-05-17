@@ -1,6 +1,8 @@
 // pages/dictation/index/index.js - 听写主页（Phase 2 完整实现）
 const { detectType, getTypeLabel } = require('../../../services/type-detector')
 const { normalize } = require('../../../services/grading-service')
+const ocr = require('../../../services/ocr-service')
+const { uploadToCloudStorage } = require('../../../utils/cloud')
 const cache = require('../../../utils/cache')
 
 // 约束（来自 docs/01-PRD.md 第 12.1 节）
@@ -12,6 +14,16 @@ const MAX_READ = 5
 const MIN_INTERVAL = 3
 const MAX_INTERVAL = 30
 
+// 判定 OCR 识别结果是否可疑（含数字或非常规字符）→ UI 高亮提醒
+function looksSuspicious(text) {
+  if (!text || text.length < 1) return true
+  if (/[0-9]/.test(text)) return true
+  if (/[#&*~^@<>{}[\]\\|]/.test(text)) return true
+  // 全是奇怪字符
+  if (!/[一-龥a-zA-Z]/.test(text)) return true
+  return false
+}
+
 Page({
   data: {
     inputValue: '',
@@ -22,6 +34,20 @@ Page({
   },
 
   onLoad() {
+    this._restore()
+  },
+
+  onShow() {
+    // 从 ocr-confirm 返回时，可能在 globalData.pendingOcrResult.confirmed 里带回新增条目
+    const app = getApp()
+    const merged = app.globalData.pendingOcrResult && app.globalData.pendingOcrResult.confirmed
+    if (Array.isArray(merged) && merged.length > 0) {
+      this._mergeFromOcr(merged)
+      app.globalData.pendingOcrResult = null
+    }
+  },
+
+  _restore() {
     const app = getApp()
 
     // 「重新听写」入口（来自单词本/判分结果页）：globalData.currentDictation.list 已被预填充
@@ -38,6 +64,25 @@ Page({
       pendingList: cache.getPendingList(),
       settings: cache.getSettings()
     })
+  },
+
+  _mergeFromOcr(items) {
+    // 把 OCR 确认页返回的条目合入清单（去重 + 截断到 MAX_ITEMS）
+    const existing = this.data.pendingList.slice()
+    const seen = new Set(existing.map(it => normalize(it.content)))
+    for (const c of items) {
+      if (existing.length >= MAX_ITEMS) break
+      const k = normalize(c.content)
+      if (k.length === 0 || seen.has(k)) continue
+      seen.add(k)
+      existing.push({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        content: c.content,
+        type: c.type || detectType(c.content)
+      })
+    }
+    this.setData({ pendingList: existing })
+    cache.setPendingList(existing)
   },
 
   // ── 输入 ──
@@ -116,9 +161,41 @@ Page({
     })
   },
 
-  // ── 拍照（Phase 2：跳到 OCR 确认页，页面里仍是假数据，Phase 4 接真实 OCR） ──
+  // ── 拍照录入（Phase 4 真实 OCR） ──
   onCameraTap() {
-    wx.navigateTo({ url: '/pages/dictation/ocr-confirm/index' })
+    const app = getApp()
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['camera', 'album'],
+      sizeType: ['compressed'],
+      success: (res) => {
+        const filePath = res.tempFiles && res.tempFiles[0] && res.tempFiles[0].tempFilePath
+        if (!filePath) return
+        wx.showLoading({ title: '识别中…', mask: true })
+        uploadToCloudStorage(filePath, 'ocr-input')
+          .then(fileID => ocr.recognize(fileID))
+          .then(({ items }) => {
+            wx.hideLoading()
+            // 把识别条目预处理为带 type 的对象
+            const enriched = items.map(text => ({
+              content: text,
+              type: detectType(text),
+              suspicious: looksSuspicious(text)
+            }))
+            app.globalData.pendingOcrResult = { items: enriched, confirmed: null }
+            wx.navigateTo({ url: '/pages/dictation/ocr-confirm/index' })
+          })
+          .catch(err => {
+            wx.hideLoading()
+            console.error('[home] OCR 失败:', err && err.message)
+            wx.showToast({ title: (err && err.message) || '识别失败', icon: 'none', duration: 2200 })
+          })
+      },
+      fail: () => {
+        // 用户取消选图：不需要提示
+      }
+    })
   },
 
   // ── 设置 ──

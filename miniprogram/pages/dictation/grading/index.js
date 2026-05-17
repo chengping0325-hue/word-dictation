@@ -1,8 +1,8 @@
 // pages/dictation/grading/index.js
-// Phase 2 阶段：用 setTimeout 模拟 OCR + 判分耗时，生成假结果。
-// Phase 4 阶段：替换为 ocr.recognize + grading.gradeSession。
-
-const FAKE_DELAY_MS = 2500
+// Phase 4：真实 OCR + 判分
+// URL 参数 fileID = 已上传到云存储的答卷图片
+const ocr = require('../../../services/ocr-service')
+const { gradeSession } = require('../../../services/grading-service')
 
 Page({
   data: {
@@ -13,7 +13,7 @@ Page({
     ]
   },
 
-  onLoad() {
+  onLoad(query) {
     const app = getApp()
     const cd = app.globalData.currentDictation
     if (!cd || !Array.isArray(cd.list) || cd.list.length === 0) {
@@ -21,9 +21,21 @@ Page({
       setTimeout(() => wx.navigateBack(), 600)
       return
     }
+    const fileID = query && query.fileID ? decodeURIComponent(query.fileID) : ''
+    if (!fileID) {
+      wx.showToast({ title: '缺少图片', icon: 'none' })
+      setTimeout(() => wx.navigateBack(), 600)
+      return
+    }
 
-    // 半秒后让 step 2 进入完成态、step 3 进入进行态（让用户感觉有进展）
-    this._timer1 = setTimeout(() => {
+    this._run(fileID, cd.list)
+  },
+
+  async _run(fileID, list) {
+    try {
+      // 步骤 2: OCR
+      const { items: ocrTexts } = await ocr.recognize(fileID)
+
       this.setData({
         steps: [
           { label: '图片上传完成', state: 'done' },
@@ -31,48 +43,31 @@ Page({
           { label: '逐词对比判分', state: 'active' }
         ]
       })
-    }, FAKE_DELAY_MS / 2)
 
-    // 完成后生成假结果，跳到结果页
-    this._timer2 = setTimeout(() => {
-      const result = generateFakeResult(cd.list)
+      // 步骤 3: 判分
+      const result = gradeSession(list, ocrTexts)
+      result.mode = 'ocr'
+
+      const app = getApp()
       app.globalData.currentResult = result
       wx.redirectTo({ url: '/pages/dictation/result/index' })
-    }, FAKE_DELAY_MS)
-  },
-
-  onUnload() {
-    if (this._timer1) clearTimeout(this._timer1)
-    if (this._timer2) clearTimeout(this._timer2)
+    } catch (err) {
+      console.error('[grading] failed:', err && err.message)
+      wx.hideLoading()
+      wx.showModal({
+        title: '识别失败',
+        content: (err && err.message) || '换用手动核对?',
+        confirmText: '手动核对',
+        cancelText: '返回',
+        confirmColor: '#2563EB',
+        success: (r) => {
+          if (r.confirm) {
+            wx.redirectTo({ url: '/pages/dictation/manual-check/index' })
+          } else {
+            wx.navigateBack()
+          }
+        }
+      })
+    }
   }
 })
-
-// 生成假判分结果（Phase 2 用，Phase 4 会被真正的 gradeSession 替换）
-function generateFakeResult(list) {
-  const items = list.map(item => {
-    const isCorrect = Math.random() > 0.25 // ~75% 正确率
-    const out = {
-      content: item.content,
-      type: item.type,
-      isCorrect
-    }
-    if (!isCorrect) {
-      out.userAnswer = fakeWrongAnswer(item.content)
-    }
-    return out
-  })
-  const correct = items.filter(i => i.isCorrect).length
-  const total = items.length
-  return {
-    score: { correct, total, rate: total > 0 ? correct / total : 0 },
-    items,
-    mode: 'ocr'
-  }
-}
-
-function fakeWrongAnswer(text) {
-  // 给定文本造一个"像错了"的版本
-  if (!text || text.length < 2) return text + '_'
-  const mid = Math.floor(text.length / 2)
-  return text.slice(0, mid) + text.slice(mid + 1) // 删掉中间一个字符
-}

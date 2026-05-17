@@ -1,18 +1,13 @@
 .word-item {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  padding: 16rpx 0;
+  gap: 20rpx;
+  padding: 24rpx 0;          /* 行高加大,适应 17px 字号 */
   border-bottom: 1rpx solid #f1f5fd;
 }
 .word-item.with-sentence { align-items: flex-start; }
 .word-item.with-sentence .tag { margin-top: 4rpx; }
 .word-item:last-child { border-bottom: none; }
-
-.drag-handle {
-  color: #cbd5e1;
-  font-size: 28rpx;
-}
 
 .word-text {
   flex: 1;

@@ -107,7 +107,9 @@ page {
 .text-center { text-align: center; }
 .muted { color: #94a3b8; }
 
-/* 滚动容器留出底部 Tab 高度 */
+/* 滚动容器留出底部 Tab 高度
+ * Tab 可视区 110rpx + 主按钮 96rpx + 视觉余量 40rpx + 下方 safe-area
+ */
 .has-tab-bar {
-  padding-bottom: 140rpx;
+  padding-bottom: calc(246rpx + env(safe-area-inset-bottom));
 }

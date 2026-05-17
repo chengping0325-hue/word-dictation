@@ -2,10 +2,9 @@
 
   <view class="card">
     <view class="ocr-summary">
-      <view class="orig-thumb">原图</view>
       <view class="flex-1 summary-text">
         <view>已识别 <text class="hl">{{ totalCount }} 条内容</text></view>
-        <view class="warn">{{ suspiciousCount }} 条可能识别有误,请核对</view>
+        <view wx:if="{{ suspiciousCount > 0 }}" class="warn">{{ suspiciousCount }} 条可能识别有误,请核对</view>
       </view>
       <view class="retake-btn" bindtap="onRetake">↻ 重拍</view>
     </view>
