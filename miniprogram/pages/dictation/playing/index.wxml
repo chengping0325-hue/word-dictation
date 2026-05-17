@@ -9,7 +9,7 @@
 
   <!-- 顶部栏 -->
   <view class="top-row">
-    <view class="circle-btn" bindtap="onBack">‹</view>
+    <view class="circle-btn" bindtap="onBack">←</view>
     <view class="progress-num">{{ currentIndex + 1 }} / {{ total }}</view>
     <view class="circle-placeholder"></view>
   </view>
@@ -27,7 +27,7 @@
     <view class="sound-circle">
       <view wx:if="{{ isPlaying }}" class="ripple ripple1"></view>
       <view wx:if="{{ isPlaying }}" class="ripple ripple2"></view>
-      <view class="speaker-emoji">{{ isPaused ? '⏸' : (isWaitingInterval ? '⏱' : '🔊') }}</view>
+      <view class="speaker-svg"></view>
     </view>
 
     <view class="read-progress">
@@ -36,7 +36,9 @@
               class="dot {{ item ? 'active' : '' }}"></view>
       </view>
       <view class="read-meta">
-        <text wx:if="{{ isWaitingInterval }}">间隔等待中...</text>
+        <text wx:if="{{ isGenerating }}">正在准备音频…</text>
+        <text wx:elif="{{ isPaused }}">已暂停</text>
+        <text wx:elif="{{ isWaitingInterval }}">间隔等待中…</text>
         <text wx:else>第 {{ readCurrent }} 次 / 共 {{ readCount }} 次</text>
       </view>
     </view>

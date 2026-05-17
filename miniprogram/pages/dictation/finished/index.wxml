@@ -12,7 +12,7 @@
 
   <view class="center-area">
     <view class="check-circle">
-      <view class="check-icon">✓</view>
+      <view class="check-svg"></view>
     </view>
     <view class="big-title">听写完成!</view>
     <view class="sub-title">共听写 {{ total }} 条内容</view>
@@ -21,17 +21,17 @@
       <view class="next-label">下一步</view>
       <view class="next-steps">
         <view class="step">
-          <view class="step-icon">📷</view>
+          <view class="step-icon step-icon-camera"></view>
           <view class="step-label">拍照</view>
         </view>
         <view class="step-arrow">›</view>
         <view class="step">
-          <view class="step-icon">⚙</view>
+          <view class="step-icon step-icon-ai"></view>
           <view class="step-label">AI 识别</view>
         </view>
         <view class="step-arrow">›</view>
         <view class="step">
-          <view class="step-icon">🏆</view>
+          <view class="step-icon step-icon-trophy"></view>
           <view class="step-label">看成绩</view>
         </view>
       </view>
@@ -41,8 +41,8 @@
   <view class="spacer"></view>
 
   <view class="bottom-buttons">
-    <button class="btn-grade" bindtap="onPhotoGrade">拍照判分</button>
-    <button class="btn-manual" bindtap="onManualCheck">改用手动核对</button>
+    <view class="btn-grade" bindtap="onPhotoGrade">拍照判分</view>
+    <view class="btn-manual" bindtap="onManualCheck">改用手动核对</view>
   </view>
 
 </view>

@@ -9,7 +9,7 @@ page {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding-bottom: 56rpx;
+  padding-bottom: calc(96rpx + env(safe-area-inset-bottom));  /* 项 5(a) 距底 ≥48px */
 }
 
 .custom-navbar {
@@ -48,11 +48,13 @@ page {
   justify-content: center;
   margin: 0 auto 48rpx;
 }
-.check-icon {
-  font-size: 96rpx;
-  color: #F59E0B;
-  font-weight: 700;
-  line-height: 1;
+.check-svg {
+  width: 96rpx;             /* 原型 48px */
+  height: 96rpx;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%23F59E0B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .big-title {
@@ -85,20 +87,35 @@ page {
 .step {
   text-align: center;
 }
+/* 项 12：每个 step-icon 是 48x48 渐变圆角矩形 + 主体白色叠加 + 下方阴影 */
 .step-icon {
-  width: 76rpx;
-  height: 76rpx;
-  border-radius: 20rpx;
-  background: rgba(255,255,255,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 96rpx;                /* 48px = 96rpx */
+  height: 96rpx;
   margin: 0 auto 12rpx;
-  font-size: 36rpx;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 6rpx 12rpx rgba(0,0,0,0.25));
 }
+
+/* 拍照：蓝色渐变 #60a5fa → #2563eb，相机 body + 镜头圆 + 闪光灯 */
+.step-icon-camera {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><defs><linearGradient id='gc' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%2360a5fa'/><stop offset='1' stop-color='%232563eb'/></linearGradient></defs><rect x='2' y='2' width='44' height='44' rx='8' ry='8' fill='url(%23gc)'/><rect x='34' y='10' width='6' height='3' rx='1' fill='%23ffffff' opacity='0.85'/><path d='M10 18 h6 l2-3 h12 l2 3 h6 a2 2 0 0 1 2 2 v14 a2 2 0 0 1 -2 2 h-26 a2 2 0 0 1 -2 -2 v-14 a2 2 0 0 1 2 -2 z' fill='%23ffffff' opacity='0.95'/><circle cx='24' cy='28' r='6' fill='url(%23gc)'/><circle cx='24' cy='28' r='3.5' fill='%23ffffff' opacity='0.8'/></svg>");
+}
+
+/* AI 识别：紫色渐变 #c084fc → #7e22ce，魔法棒 + 星星 */
+.step-icon-ai {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><defs><linearGradient id='ga' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23c084fc'/><stop offset='1' stop-color='%237e22ce'/></linearGradient></defs><rect x='2' y='2' width='44' height='44' rx='8' ry='8' fill='url(%23ga)'/><rect x='10' y='32' width='4.5' height='4.5' rx='1' fill='%23ffffff' opacity='0.9' transform='rotate(-45 12.25 34.25)'/><rect x='14' y='28' width='4.5' height='4.5' rx='1' fill='%23ffffff' opacity='0.9' transform='rotate(-45 16.25 30.25)'/><rect x='18' y='24' width='4.5' height='4.5' rx='1' fill='%23ffffff' opacity='0.9' transform='rotate(-45 20.25 26.25)'/><rect x='22' y='20' width='4.5' height='4.5' rx='1' fill='%23ffffff' transform='rotate(-45 24.25 22.25)'/><path d='M30 8 l1.8 4 l4 1.8 l-4 1.8 l-1.8 4 l-1.8 -4 l-4 -1.8 l4 -1.8 z' fill='%23ffffff'/><path d='M38 18 l1 2 l2 1 l-2 1 l-1 2 l-1 -2 l-2 -1 l2 -1 z' fill='%23ffffff' opacity='0.85'/></svg>");
+}
+
+/* 看成绩：金色渐变 #fbbf24 → #d97706，奖杯 */
+.step-icon-trophy {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><defs><linearGradient id='gt' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23fbbf24'/><stop offset='1' stop-color='%23d97706'/></linearGradient></defs><rect x='2' y='2' width='44' height='44' rx='8' ry='8' fill='url(%23gt)'/><path d='M16 10 h16 v8 a8 8 0 0 1 -16 0 z' fill='%23ffffff' opacity='0.95'/><path d='M16 12 h-3 a2 2 0 0 0 -2 2 v2 a4 4 0 0 0 4 4 h1' fill='none' stroke='%23ffffff' stroke-width='2' opacity='0.85'/><path d='M32 12 h3 a2 2 0 0 1 2 2 v2 a4 4 0 0 1 -4 4 h-1' fill='none' stroke='%23ffffff' stroke-width='2' opacity='0.85'/><rect x='22' y='26' width='4' height='6' fill='%23ffffff' opacity='0.9'/><rect x='17' y='32' width='14' height='4' rx='1' fill='%23ffffff'/></svg>");
+}
+
 .step-label {
-  font-size: 20rpx;
-  opacity: 0.7;
+  font-size: 22rpx;            /* 项 12 文案要求 11px */
+  color: rgba(255,255,255,0.85);
 }
 .step-arrow {
   font-size: 32rpx;
@@ -113,23 +130,28 @@ page {
 .btn-grade {
   width: 100%;
   height: 100rpx;
-  line-height: 100rpx;
   border-radius: 28rpx;
   background: #F59E0B;
   color: #fff;
   font-size: 32rpx;
   font-weight: 600;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;       /* 项 5(c) 上下间距 12px = 24rpx */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
-.btn-grade::after { border: none; }
 .btn-manual {
   width: 100%;
   height: 88rpx;
-  line-height: 88rpx;
   border-radius: 28rpx;
   background: transparent;
   color: rgba(255,255,255,0.85);
-  font-size: 26rpx;
+  font-size: 30rpx;            /* 项 9 次按钮 13→15px */
+  font-weight: 500;
   border: 1rpx solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
-.btn-manual::after { border: none; }

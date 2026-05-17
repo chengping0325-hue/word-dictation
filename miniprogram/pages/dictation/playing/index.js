@@ -1,16 +1,17 @@
 // pages/dictation/playing/index.js
 //
-// Phase 2 阶段：用 setTimeout 模拟 TTS 朗读。每"读一次"耗 1.5 秒。
-// Phase 3 阶段把 simulateRead() 替换成 tts-service.generateSpeech + playAudio。
+// Phase 3：用真实 TTS 替换 Phase 2 的 setTimeout 模拟。
+// 状态机保留：cancelled / replayFlag / skipFlag / isPaused
 //
-// 状态机：
-//   - cancelled：用户确认退出 / 页面卸载，整个循环停止
-//   - replayFlag：用户按"重听"，当前条目从第 1 次重读
-//   - skipFlag：用户按"下一个"，跳过剩余读次和间隔，进入下一条
-//   - isPaused：用户按"暂停"，循环冻结直到再按"继续"
-const { getTypeLabel } = require('../../../services/type-detector')
+// 关键变化：
+//   - 进入每条 item 时调 tts.generateSpeech 预生成音频（音频缓存在 service 层）
+//   - 每次"读一次"是 await tts.playAudio(audioUrl)
+//   - 暂停/重听/下一个/退出 都调 tts.stopAudio() 中断当前播放
+//   - 多次朗读之间等 200ms（PRD 5.3）
+const tts = require('../../../services/tts-service')
+const { getTypeLabel, getLang } = require('../../../services/type-detector')
 
-const SIMULATED_READ_MS = 1500   // Phase 2 假装"读一次"的时长
+const GAP_BETWEEN_READS_MS = 200
 
 Page({
   data: {
@@ -21,15 +22,16 @@ Page({
     typeLabel: '',
     readCount: 2,
     interval: 5,
-    readCurrent: 1,           // 1-based 当前是第几次朗读
+    readCurrent: 1,
     isPaused: false,
-    isWaitingInterval: false, // 在等间隔时间
-    isPlaying: false,         // 正在"播放"中
+    isWaitingInterval: false,
+    isPlaying: false,
+    isGenerating: false,      // 正在调云函数合成音频
     progressBars: [],
     readDots: []
   },
 
-  // 实例级状态（不放 setData 里避免重渲染）
+  // 实例级状态
   _cancelled: false,
   _replayFlag: false,
   _skipFlag: false,
@@ -46,29 +48,50 @@ Page({
     }
 
     const total = cd.list.length
-    const readDots = Array.from({ length: cd.readCount }, () => false)
     this.setData({
       list: cd.list,
       total,
       readCount: cd.readCount,
       interval: cd.interval,
       progressBars: this._buildProgressBars(0, total),
-      readDots
+      readDots: this._buildReadDots(1, cd.readCount)
     })
 
     this._cancelled = false
     this._replayFlag = false
     this._skipFlag = false
 
-    // 启动循环（不 await，让 onLoad 立即返回）
     this._runLoop().catch(err => {
-      console.error('[Playing] loop error:', err)
+      console.error('[playing] loop error:', err)
     })
+  },
+
+  onShow() {
+    // 项 11：拦截系统返回（iOS 侧滑、Android back、微信导航栏 ←）
+    // 注意：wx.enableAlertBeforeUnload 弹的是系统级确认框（无法自定义文案颜色）
+    // 这是小程序唯一能拦截系统返回的方式。我们的自定义弹窗（onBack）仅用于
+    // 自定义导航栏的左上角圆形 ← 按钮。
+    if (wx.enableAlertBeforeUnload) {
+      wx.enableAlertBeforeUnload({
+        message: '退出后未完成的听写进度不会保存,确认离开?'
+      })
+    }
+  },
+
+  onHide() {
+    if (wx.disableAlertBeforeUnload) {
+      wx.disableAlertBeforeUnload()
+    }
   },
 
   onUnload() {
     this._cancelled = true
+    tts.stopAudio()
     this._abortSleep()
+    tts.clearCache()
+    if (wx.disableAlertBeforeUnload) {
+      wx.disableAlertBeforeUnload()
+    }
   },
 
   // ── 主循环 ──
@@ -76,7 +99,38 @@ Page({
     while (!this._cancelled && this.data.currentIndex < this.data.total) {
       const i = this.data.currentIndex
       this._updateForItem(i)
-      await this._playReads()
+
+      // 预生成本条音频（云函数调用 + 写临时文件，约 1–2 秒）
+      let audioUrl
+      this.setData({ isGenerating: true, isPlaying: false })
+      try {
+        const cur = this.data.list[i]
+        const lang = getLang(cur.type)
+        const res = await tts.generateSpeech(cur.content, lang)
+        audioUrl = res.audioUrl
+      } catch (err) {
+        this.setData({ isGenerating: false })
+        if (this._cancelled) return
+        // PRD 5.5：toast 提示，停在当前条目，等用户手动重听/下一个
+        wx.showToast({ title: '朗读失败,请重试', icon: 'none', duration: 2000 })
+        const action = await this._waitForUserAction()
+        if (this._cancelled) return
+        if (action === 'replay') { this._replayFlag = false; continue }
+        if (action === 'skip') {
+          this._skipFlag = false
+          this.setData({
+            currentIndex: i + 1,
+            progressBars: this._buildProgressBars(i + 1, this.data.total)
+          })
+          continue
+        }
+        continue
+      }
+      this.setData({ isGenerating: false })
+
+      if (this._cancelled) return
+
+      await this._playReads(audioUrl)
       if (this._cancelled) return
 
       // 间隔等待（最后一条不等）
@@ -85,11 +139,7 @@ Page({
         const intervalResult = await this._waitIntervalCancellable(this.data.interval * 1000)
         this.setData({ isWaitingInterval: false })
         if (this._cancelled) return
-        if (intervalResult === 'replay') {
-          // 间隔期内按"重听"：原地重做当前条目
-          continue
-        }
-        // 'skip' 或 'completed' 都直接前进
+        if (intervalResult === 'replay') { continue }  // 间隔期内按"重听" → 原地重做本条
       }
 
       if (this._cancelled) return
@@ -104,7 +154,7 @@ Page({
     }
   },
 
-  async _playReads() {
+  async _playReads(audioUrl) {
     let r = 1
     while (r <= this.data.readCount && !this._cancelled && !this._skipFlag) {
       if (this._replayFlag) { this._replayFlag = false; r = 1; continue }
@@ -122,23 +172,33 @@ Page({
         readDots: this._buildReadDots(r, this.data.readCount)
       })
 
-      await this._cancellableSleep(SIMULATED_READ_MS)
+      let endReason
+      try {
+        endReason = await tts.playAudio(audioUrl)
+      } catch (err) {
+        console.error('[playing] playAudio error:', err)
+        wx.showToast({ title: '播放失败', icon: 'none' })
+        endReason = 'error'
+      }
 
       this.setData({ isPlaying: false })
 
       if (this._cancelled || this._skipFlag) break
       if (this._replayFlag) continue
-      // 如果暂停期间 abortSleep 被调用过，isPaused 依然为 true，外层会卡住直到 resume，然后重做当前 r
-      if (this.data.isPaused) continue
+      if (this.data.isPaused) continue  // 暂停中断，重做当前 r
+      if (endReason === 'error') break
 
       r++
+      if (r <= this.data.readCount) {
+        await this._cancellableSleep(GAP_BETWEEN_READS_MS)
+        if (this._cancelled || this._skipFlag) break
+        if (this._replayFlag) continue
+      }
     }
     this._skipFlag = false
   },
 
-  // 间隔等待，可被 replay/skip/cancel/pause 打断
   async _waitIntervalCancellable(ms) {
-    // 暂停时先等
     while (this.data.isPaused && !this._cancelled) {
       await this._sleep(80)
     }
@@ -152,7 +212,17 @@ Page({
     return 'completed'
   },
 
-  // ── 工具函数 ──
+  // 错误恢复用：等用户按重听或下一个
+  async _waitForUserAction() {
+    while (!this._cancelled && !this._replayFlag && !this._skipFlag) {
+      await this._sleep(120)
+    }
+    if (this._cancelled) return 'cancelled'
+    if (this._replayFlag) return 'replay'
+    return 'skip'
+  },
+
+  // ── 工具 ──
   _sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
   },
@@ -207,6 +277,7 @@ Page({
   // ── 控件回调 ──
   onReplay() {
     this._replayFlag = true
+    tts.stopAudio()
     this._abortSleep()
   },
 
@@ -214,18 +285,23 @@ Page({
     const wasPaused = this.data.isPaused
     this.setData({ isPaused: !wasPaused })
     if (!wasPaused) {
-      // 进入暂停态：打断当前 sleep，让循环回到 pause-polling
+      // 进入暂停：中断播放和 sleep
+      tts.stopAudio()
       this._abortSleep()
     }
-    // 进入继续态：循环里的 pause-polling 会在下一次 _sleep(80) 后退出，无需做额外事
   },
 
   onNext() {
     this._skipFlag = true
+    tts.stopAudio()
     this._abortSleep()
   },
 
   onBack() {
+    // 临时禁用系统拦截，避免和自定义 modal 双重弹窗
+    if (wx.disableAlertBeforeUnload) {
+      wx.disableAlertBeforeUnload()
+    }
     wx.showModal({
       title: '确定要退出听写吗?',
       content: `当前已听写到第 ${this.data.currentIndex + 1} 条 / 共 ${this.data.total} 条\n未完成的进度不会保存`,
@@ -235,8 +311,24 @@ Page({
       success: (res) => {
         if (res.confirm) {
           this._cancelled = true
+          tts.stopAudio()
           this._abortSleep()
           wx.navigateBack()
+        } else {
+          // 取消退出 → 恢复系统拦截
+          if (wx.enableAlertBeforeUnload) {
+            wx.enableAlertBeforeUnload({
+              message: '退出后未完成的听写进度不会保存,确认离开?'
+            })
+          }
+        }
+      },
+      fail: () => {
+        // modal 异常关闭也要恢复拦截
+        if (wx.enableAlertBeforeUnload) {
+          wx.enableAlertBeforeUnload({
+            message: '退出后未完成的听写进度不会保存,确认离开?'
+          })
         }
       }
     })

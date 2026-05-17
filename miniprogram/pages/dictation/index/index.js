@@ -24,7 +24,7 @@ Page({
   onLoad() {
     const app = getApp()
 
-    // 「用错词重新听写」入口：globalData.currentDictation.list 已被预填充
+    // 「重新听写」入口（来自单词本/判分结果页）：globalData.currentDictation.list 已被预填充
     const pending = (app.globalData.currentDictation || {}).list
     if (Array.isArray(pending) && pending.length > 0) {
       this.setData({ pendingList: pending })

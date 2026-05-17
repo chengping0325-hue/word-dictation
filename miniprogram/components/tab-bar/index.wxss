@@ -18,83 +18,39 @@
   flex-direction: column;
   align-items: center;
   gap: 4rpx;
-  color: #94a3b8;
   font-size: 20rpx;
-  font-weight: 500;
+  color: #94a3b8;
 }
 
 .tab-item.active {
   color: #2563EB;
+}
+.tab-item.active .tab-label {
   font-weight: 600;
 }
 
 .tab-icon {
-  width: 44rpx;
-  height: 44rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
-/* 用 CSS 画的简化喇叭/书本图标，避免引入外部资源 */
-.icon-speaker {
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 14rpx 22rpx 14rpx 0;
-  border-color: transparent currentColor transparent transparent;
-  position: relative;
+/* 线性图标：fill='none' + stroke 2.2，圆角线帽，未选中 #94a3b8 / 选中 #2563EB */
+
+.tab-icon-speaker {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/><path d='M15.54 8.46a5 5 0 0 1 0 7.07'/><path d='M19.07 4.93a10 10 0 0 1 0 14.14'/></svg>");
 }
-.icon-speaker::before {
-  content: '';
-  position: absolute;
-  left: 4rpx;
-  top: -6rpx;
-  width: 12rpx;
-  height: 12rpx;
-  background: currentColor;
-}
-.icon-speaker::after {
-  content: '';
-  position: absolute;
-  left: 28rpx;
-  top: -8rpx;
-  width: 8rpx;
-  height: 28rpx;
-  border-right: 4rpx solid currentColor;
-  border-top: 4rpx solid currentColor;
-  border-bottom: 4rpx solid currentColor;
-  border-radius: 0 50% 50% 0;
-  opacity: 0.6;
+.tab-icon-speaker.is-active {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/><path d='M15.54 8.46a5 5 0 0 1 0 7.07'/><path d='M19.07 4.93a10 10 0 0 1 0 14.14'/></svg>");
 }
 
-.icon-book {
-  width: 28rpx;
-  height: 36rpx;
-  border: 4rpx solid currentColor;
-  border-left-width: 6rpx;
-  border-radius: 4rpx 8rpx 8rpx 4rpx;
-  position: relative;
+.tab-icon-book {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/></svg>");
 }
-.icon-book::before {
-  content: '';
-  position: absolute;
-  left: -2rpx;
-  top: 6rpx;
-  width: 18rpx;
-  height: 4rpx;
-  background: currentColor;
-  opacity: 0.5;
-}
-.icon-book::after {
-  content: '';
-  position: absolute;
-  left: -2rpx;
-  top: 16rpx;
-  width: 12rpx;
-  height: 4rpx;
-  background: currentColor;
-  opacity: 0.5;
+.tab-icon-book.is-active {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/></svg>");
 }
 
 .tab-label {

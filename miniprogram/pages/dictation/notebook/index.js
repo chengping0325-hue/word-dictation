@@ -1,9 +1,11 @@
-// 单词本 - Phase 1 静态版
+// 单词本 - Phase 1 静态版（Phase 5 会改成读云数据库）
+// "重新听写"按钮：把该次 session 的全部条目（不论对错）作为新清单回主页
 Page({
   data: {
     filter: 'all', // 'all' | 'wrong'
     sessions: [
       {
+        id: 's1',
         date: '2026年5月16日',
         summary: '4 / 6 正确',
         items: [
@@ -16,6 +18,7 @@ Page({
         ]
       },
       {
+        id: 's2',
         date: '2026年5月15日',
         summary: '5 / 5 全对 🎉',
         items: [
@@ -29,11 +32,30 @@ Page({
 
   onFilterChange(e) {
     const filter = e.currentTarget.dataset.filter
+    if (filter === this.data.filter) return
     this.setData({ filter })
   },
 
-  onReDictateWrong() {
-    // Phase 5 实现
-    wx.showToast({ title: 'Phase 5 实现', icon: 'none' })
+  // 项 8：点该次卡片底部的"重新听写"按钮
+  // 行为：把该次 session 的所有条目（不论 isCorrect）作为新清单，reLaunch 到主页
+  onReDictateSession(e) {
+    const sessionId = e.currentTarget.dataset.sessionId
+    const session = this.data.sessions.find(s => s.id === sessionId)
+    if (!session) return
+
+    const list = (session.items || []).map(it => ({
+      id: `re-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      content: it.content,
+      type: it.type
+    }))
+    if (list.length === 0) return
+
+    const app = getApp()
+    app.globalData.currentDictation = {
+      list,
+      readCount: 2,
+      interval: 5
+    }
+    wx.reLaunch({ url: '/pages/dictation/index/index' })
   }
 })

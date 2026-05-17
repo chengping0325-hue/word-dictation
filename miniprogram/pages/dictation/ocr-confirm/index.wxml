@@ -37,6 +37,6 @@
     <view class="tip-body">句子识别难免有偏差,只需核对 <text class="bold">单词写法</text> 即可,标点和大小写不重要。</view>
   </view>
 
-  <button class="btn-primary" bindtap="onConfirm">确认添加 {{ totalCount }} 条内容</button>
+  <view class="btn-primary" bindtap="onConfirm">确认添加</view>
 
 </view>

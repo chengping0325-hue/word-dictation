@@ -1,16 +1,12 @@
 <view class="dictation-tab-bar">
   <view class="tab-item {{ active === 'dictation' ? 'active' : '' }}"
         bindtap="switchTab" data-tab="dictation">
-    <view class="tab-icon">
-      <view class="icon-speaker"></view>
-    </view>
+    <view class="tab-icon tab-icon-speaker {{ active === 'dictation' ? 'is-active' : '' }}"></view>
     <view class="tab-label">听写</view>
   </view>
   <view class="tab-item {{ active === 'notebook' ? 'active' : '' }}"
         bindtap="switchTab" data-tab="notebook">
-    <view class="tab-icon">
-      <view class="icon-book"></view>
-    </view>
+    <view class="tab-icon tab-icon-book {{ active === 'notebook' ? 'is-active' : '' }}"></view>
     <view class="tab-label">单词本</view>
   </view>
 </view>

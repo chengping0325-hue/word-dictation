@@ -1,0 +1,10 @@
+{
+  "name": "tts",
+  "version": "1.0.0",
+  "description": "腾讯云 TTS 转发云函数（书斋小程序 Phase 3）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "tencentcloud-sdk-nodejs-tts": "^4.0.0"
+  }
+}

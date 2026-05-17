@@ -1,42 +1,47 @@
 <view class="notebook-page has-tab-bar">
 
-  <!-- Filter Tabs -->
-  <view class="filter-row">
-    <view class="filter-tab {{ filter === 'all' ? 'active' : '' }}"
-          data-filter="all" bindtap="onFilterChange">全部记录</view>
-    <view class="filter-tab {{ filter === 'wrong' ? 'active' : '' }}"
-          data-filter="wrong" bindtap="onFilterChange">仅错词</view>
+  <!-- 项 7：胶囊式分段控件 -->
+  <view class="segmented-wrap">
+    <view class="segmented">
+      <view class="segment {{ filter === 'all' ? 'active' : '' }}"
+            data-filter="all" bindtap="onFilterChange">全部记录</view>
+      <view class="segment {{ filter === 'wrong' ? 'active' : '' }}"
+            data-filter="wrong" bindtap="onFilterChange">仅错词</view>
+    </view>
   </view>
 
   <!-- Sessions grouped by date -->
-  <block wx:for="{{ sessions }}" wx:for-item="session" wx:key="date">
+  <block wx:for="{{ sessions }}" wx:for-item="session" wx:key="id">
     <view class="card">
       <view class="session-head">
         <text>{{ session.date }}</text>
         <text class="dot">·</text>
         <text>{{ session.summary }}</text>
       </view>
-      <view wx:for="{{ session.items }}" wx:for-item="item" wx:key="id"
-            class="word-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
-        <type-tag type="{{ item.type }}" />
-        <view class="flex-1">
-          <view class="word-text {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }} {{ !item.isCorrect ? 'wrong' : '' }}">{{ item.content }}</view>
-          <view wx:if="{{ item.wrongHint }}" class="wrong-hint">{{ item.wrongHint }}</view>
-          <view wx:elif="{{ !item.isCorrect && item.userAnswer }}" class="wrong-hint">写成 {{ item.userAnswer }} → {{ item.content }}</view>
+
+      <block wx:for="{{ session.items }}" wx:for-item="item" wx:key="id">
+        <!-- "仅错词"过滤：只显示 !isCorrect 的条目 -->
+        <view wx:if="{{ filter === 'all' || !item.isCorrect }}"
+              class="word-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
+          <type-tag type="{{ item.type }}" />
+          <view class="flex-1">
+            <view class="word-text {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }} {{ !item.isCorrect ? 'wrong' : '' }}">{{ item.content }}</view>
+            <view wx:if="{{ item.wrongHint }}" class="wrong-hint">{{ item.wrongHint }}</view>
+            <view wx:elif="{{ !item.isCorrect && item.userAnswer }}" class="wrong-hint">写成 {{ item.userAnswer }} → {{ item.content }}</view>
+          </view>
+          <view class="result-badge {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}">{{ item.isCorrect ? '✓' : '✗' }}</view>
         </view>
-        <view class="result-badge {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}">{{ item.isCorrect ? '✓' : '✗' }}</view>
+      </block>
+
+      <!-- 项 8(b)(c)(d)(e)：每个日期组底部的"重新听写"按钮 -->
+      <view class="card-action">
+        <view class="btn-card-action"
+              data-session-id="{{ session.id }}"
+              bindtap="onReDictateSession">重新听写</view>
       </view>
     </view>
   </block>
 
-  <view wx:if="{{ filter === 'wrong' }}" class="re-dictate-wrap">
-    <button class="btn-ghost" bindtap="onReDictateWrong">用错词重新听写</button>
-  </view>
-
   <dictation-tab-bar active="notebook" />
 
 </view>
-
-<wxs module="util">
-module.exports = {}
-</wxs>

@@ -4,32 +4,41 @@
   padding-top: 8rpx;
 }
 
-.filter-row {
-  display: flex;
-  gap: 16rpx;
+/* 项 7：iOS 风格胶囊分段控件 */
+.segmented-wrap {
   padding: 24rpx 32rpx 0;
 }
-.filter-tab {
-  flex: 1;
-  height: 80rpx;
-  line-height: 80rpx;
+.segmented {
+  display: flex;
+  background: #F1F5F9;
   border-radius: 20rpx;
-  background: #fff;
-  color: #64748b;
-  font-size: 26rpx;
-  font-weight: 600;
-  text-align: center;
+  padding: 4rpx;
+  box-sizing: border-box;
 }
-.filter-tab.active {
-  background: #2563EB;
-  color: #fff;
+.segment {
+  flex: 1;
+  height: 64rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #64748b;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+.segment.active {
+  background: #fff;
+  color: #0F172A;
+  font-weight: 600;
+  box-shadow: 0 2rpx 8rpx rgba(15, 23, 42, 0.08);
 }
 
+/* 日期组卡片头 */
 .session-head {
   display: inline-flex;
   align-items: center;
   gap: 12rpx;
-  font-size: 22rpx;
+  font-size: 26rpx;        /* 项 9 类别 B：日期组摘要 11→13px */
   font-weight: 600;
   color: #2563EB;
   background: #EFF6FF;
@@ -39,6 +48,7 @@
 }
 .session-head .dot { color: #cbd5e1; }
 
+/* 单词本条目 */
 .word-item {
   display: flex;
   align-items: center;
@@ -50,13 +60,13 @@
 .word-item:last-child { border-bottom: none; }
 
 .word-text {
-  font-size: 26rpx;
+  font-size: 32rpx;          /* 项 9 类别 A：单词本条目 13→16px */
   font-weight: 600;
   color: #0F172A;
   word-break: break-word;
 }
 .word-text.sentence {
-  font-size: 26rpx;
+  font-size: 32rpx;
   font-weight: 500;
   line-height: 1.5;
 }
@@ -67,20 +77,24 @@
   color: #94a3b8;
   margin-top: 4rpx;
 }
-.wrong-hint::after { content: ''; }
 
-.re-dictate-wrap {
-  padding: 24rpx 32rpx 0;
+/* 项 8(d)：卡片底部"重新听写"按钮 */
+.card-action {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #f1f5fd;
 }
-.btn-ghost {
+.btn-card-action {
   width: 100%;
   height: 80rpx;
-  line-height: 80rpx;
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   background: #fff;
   border: 3rpx solid #bfdbfe;
   color: #2563EB;
-  font-size: 26rpx;
+  font-size: 30rpx;          /* 项 9 次按钮 15px */
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
-.btn-ghost::after { border: none; }

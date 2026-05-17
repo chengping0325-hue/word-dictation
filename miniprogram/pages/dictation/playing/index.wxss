@@ -29,7 +29,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 36rpx;
+  padding: 16rpx 36rpx 0;   /* 原型 padding-top:8px */
 }
 .circle-btn {
   width: 72rpx;
@@ -71,12 +71,12 @@ page {
 .type-pill {
   display: inline-flex;
   background: rgba(255,255,255,0.15);
-  padding: 10rpx 24rpx;
+  padding: 12rpx 28rpx;       /* 项 9 padding 微调匹配字号 +1px */
   border-radius: 24rpx;
   margin-bottom: 80rpx;
 }
 .type-pill-label {
-  font-size: 22rpx;
+  font-size: 24rpx;            /* 项 9 类别 A：听写中类型标签 +1px (11→12px) */
   font-weight: 600;
   color: #fff;
 }
@@ -92,9 +92,13 @@ page {
   margin: 0 auto 48rpx;
   position: relative;
 }
-.speaker-emoji {
-  font-size: 120rpx;
-  color: #fff;
+.speaker-svg {
+  width: 136rpx;            /* 原型 68px */
+  height: 136rpx;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='68' height='68' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><polygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/><path d='M15.54 8.46a5 5 0 0 1 0 7.07'/><path d='M19.07 4.93a10 10 0 0 1 0 14.14'/></svg>");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .ripple {

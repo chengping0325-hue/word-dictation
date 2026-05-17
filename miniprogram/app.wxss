@@ -25,32 +25,32 @@ page {
   letter-spacing: 1rpx;
 }
 
-/* ── 主按钮（蓝色渐变） ── */
+/* ── 主按钮（蓝色渐变） ──
+ * 用 view 实现而非 button，避免 WeChat <button> 自带的内边距 / line-height 异常。
+ * 宽度 calc(100% - 64rpx) + margin 0 32rpx，与 .card 完全等宽对齐。
+ */
 .btn-primary {
-  display: block;
   width: calc(100% - 64rpx);
   margin: 28rpx 32rpx 0;
   height: 96rpx;
-  line-height: 96rpx;
   border-radius: 28rpx;
   background: linear-gradient(135deg, #2563EB, #3b82f6);
   color: #fff;
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: 600;
-  text-align: center;
   letter-spacing: 1rpx;
   box-shadow: 0 8rpx 32rpx rgba(37, 99, 235, 0.35);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary[disabled],
 .btn-primary.disabled {
   opacity: 0.45;
 }
-
-/* 微信原生 button 默认样式重置 */
-.btn-primary::after {
-  border: none;
-}
+.btn-primary::after { border: none; }
 
 /* ── 类型标签 ── */
 .tag {
