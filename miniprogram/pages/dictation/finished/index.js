@@ -53,5 +53,16 @@ Page({
 
   onManualCheck() {
     wx.navigateTo({ url: '/pages/dictation/manual-check/index' })
+  },
+
+  // 返回上一页(听写中)→ 实际会跳过 playing 直接回主页(因为 playing 用 redirectTo 跳过来)
+  // 用户语义:放弃判分,回主页
+  onBack() {
+    wx.navigateBack({
+      fail: () => {
+        // 如果不在栈里(冷启动直接进来)就回主页
+        wx.reLaunch({ url: '/pages/dictation/index/index' })
+      }
+    })
   }
 })

@@ -1,6 +1,6 @@
 <view class="notebook-page has-tab-bar">
 
-  <!-- 项 7：胶囊式分段控件 -->
+  <!-- 胶囊式分段控件 -->
   <view class="segmented-wrap">
     <view class="segmented">
       <view class="segment {{ filter === 'all' ? 'active' : '' }}"
@@ -10,9 +10,31 @@
     </view>
   </view>
 
+  <!-- Loading -->
+  <view wx:if="{{ loading && sessions.length === 0 }}" class="state-block">
+    <view class="state-icon">⏳</view>
+    <view class="state-text">加载中…</view>
+  </view>
+
+  <!-- Error -->
+  <view wx:elif="{{ loadError }}" class="state-block">
+    <view class="state-icon">⚠️</view>
+    <view class="state-text">加载失败,请检查网络</view>
+    <view class="btn-retry" bindtap="onRetryLoad">重试</view>
+  </view>
+
+  <!-- Empty -->
+  <view wx:elif="{{ sessions.length === 0 }}" class="state-block">
+    <view class="state-icon">📖</view>
+    <view class="state-text">还没有听写记录</view>
+    <view class="state-sub">回到「听写」开始第一次练习吧</view>
+  </view>
+
   <!-- Sessions grouped by date -->
   <block wx:for="{{ sessions }}" wx:for-item="session" wx:key="id">
-    <view class="card">
+    <!-- "仅错词" 模式:若该 session 没有错词,整张卡跳过 -->
+    <view wx:if="{{ filter === 'all' || session.hasWrong !== false }}"
+          class="card">
       <view class="session-head">
         <text>{{ session.date }}</text>
         <text class="dot">·</text>
@@ -20,20 +42,18 @@
       </view>
 
       <block wx:for="{{ session.items }}" wx:for-item="item" wx:key="id">
-        <!-- "仅错词"过滤：只显示 !isCorrect 的条目 -->
         <view wx:if="{{ filter === 'all' || !item.isCorrect }}"
               class="word-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
           <type-tag type="{{ item.type }}" />
           <view class="flex-1">
             <view class="word-text {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }} {{ !item.isCorrect ? 'wrong' : '' }}">{{ item.content }}</view>
             <view wx:if="{{ item.wrongHint }}" class="wrong-hint">{{ item.wrongHint }}</view>
-            <view wx:elif="{{ !item.isCorrect && item.userAnswer }}" class="wrong-hint">写成 {{ item.userAnswer }} → {{ item.content }}</view>
           </view>
           <view class="result-badge {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}">{{ item.isCorrect ? '✓' : '✗' }}</view>
         </view>
       </block>
 
-      <!-- 项 8(b)(c)(d)(e)：每个日期组底部的"重新听写"按钮 -->
+      <!-- 每个日期组底部的"重新听写" -->
       <view class="card-action">
         <view class="btn-card-action"
               data-session-id="{{ session.id }}"

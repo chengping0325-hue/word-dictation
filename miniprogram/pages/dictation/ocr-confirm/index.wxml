@@ -14,7 +14,9 @@
     <view class="card-title">识别结果 · 点击可编辑</view>
 
     <view wx:for="{{ items }}" wx:key="id"
-          class="ocr-item {{ item.suspicious ? 'suspicious' : '' }} {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
+          class="ocr-item {{ item.suspicious ? 'suspicious' : '' }} {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}"
+          data-id="{{ item.id }}"
+          bindtap="onEdit">
       <view wx:if="{{ !item.suspicious }}" class="check-mark">✓</view>
       <view wx:else class="warn-mark">⚠</view>
       <type-tag type="{{ item.type }}" />

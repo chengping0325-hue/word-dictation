@@ -1,33 +1,21 @@
-// 单词本 - Phase 1 静态版（Phase 5 会改成读云数据库）
-// "重新听写"按钮：把该次 session 的全部条目（不论对错）作为新清单回主页
+// 单词本 — Phase 5：读云数据库真实数据
+// 数据流：onShow 调 db.collection('sessions').orderBy('createdAt', desc).limit(20).get()
+// 转换：raw sessions → [{ id, date, summary, items: [...] }]
+const { formatSessionDate } = require('../../../utils/time')
+
+const PAGE_LIMIT = 20
+
 Page({
   data: {
-    filter: 'all', // 'all' | 'wrong'
-    sessions: [
-      {
-        id: 's1',
-        date: '2026年5月16日',
-        summary: '4 / 6 正确',
-        items: [
-          { id: 'a1', content: 'apple', type: 'en_word', isCorrect: true },
-          { id: 'a2', content: '苹果', type: 'cn_word', isCorrect: true },
-          { id: 'a3', content: 'orange', type: 'en_word', isCorrect: false, userAnswer: 'oraneg' },
-          { id: 'a4', content: 'I like apples very much.', type: 'en_sentence', isCorrect: false, userAnswer: 'I like aples very much', wrongHint: 'aples → apples' },
-          { id: 'a5', content: '床前明月光,疑是地上霜', type: 'cn_sentence', isCorrect: true },
-          { id: 'a6', content: 'grape', type: 'en_word', isCorrect: true }
-        ]
-      },
-      {
-        id: 's2',
-        date: '2026年5月15日',
-        summary: '5 / 5 全对 🎉',
-        items: [
-          { id: 'b1', content: '床前明月光。', type: 'cn_sentence', isCorrect: true },
-          { id: 'b2', content: 'school', type: 'en_word', isCorrect: true },
-          { id: 'b3', content: 'friend', type: 'en_word', isCorrect: true }
-        ]
-      }
-    ]
+    filter: 'all',
+    sessions: [],
+    loading: false,
+    loadError: false
+  },
+
+  // 每次回到此 tab 都刷新（用户做完听写 → 跳 result → "查看单词本" reLaunch 过来）
+  onShow() {
+    this._loadSessions()
   },
 
   onFilterChange(e) {
@@ -36,8 +24,30 @@ Page({
     this.setData({ filter })
   },
 
-  // 项 8：点该次卡片底部的"重新听写"按钮
-  // 行为：把该次 session 的所有条目（不论 isCorrect）作为新清单，reLaunch 到主页
+  async _loadSessions() {
+    this.setData({ loading: true, loadError: false })
+    try {
+      const db = wx.cloud.database()
+      const { data } = await db.collection('sessions')
+        .orderBy('createdAt', 'desc')
+        .limit(PAGE_LIMIT)
+        .get()
+
+      const sessions = (data || []).map(transformSession)
+      this.setData({ sessions, loading: false, loadError: false })
+    } catch (err) {
+      console.error('[notebook] 加载 sessions 失败:', err && err.errMsg)
+      this.setData({ loading: false, loadError: true })
+      wx.showToast({ title: '加载失败,请重试', icon: 'none' })
+    }
+  },
+
+  onRetryLoad() {
+    this._loadSessions()
+  },
+
+  // 点该 session 卡片底部的"重新听写"
+  // 行为：把该 session 全部条目（不论对错）作为新清单 reLaunch 到主页
   onReDictateSession(e) {
     const sessionId = e.currentTarget.dataset.sessionId
     const session = this.data.sessions.find(s => s.id === sessionId)
@@ -59,3 +69,43 @@ Page({
     wx.reLaunch({ url: '/pages/dictation/index/index' })
   }
 })
+
+// 把云数据库的一条 session 转成 UI 用的结构
+function transformSession(raw) {
+  const score = raw.score || { correct: 0, total: 0 }
+  const isPerfect = score.total > 0 && score.correct === score.total
+  const summary = isPerfect
+    ? `${score.correct} / ${score.total} 全对 🎉`
+    : `${score.correct} / ${score.total} 正确`
+
+  const items = (raw.items || []).map((it, i) => ({
+    id: `${raw._id}-${i}`,
+    content: it.content,
+    type: it.type,
+    isCorrect: !!it.isCorrect,
+    userAnswer: it.userAnswer || null,
+    // 单词本里展示的"错词提示"小字
+    // 优先用 wordDiff 找第一个错词;否则用 userAnswer → content 的简单对比
+    wrongHint: buildWrongHint(it)
+  }))
+
+  const hasWrong = items.some(it => !it.isCorrect)
+
+  return {
+    id: raw._id,
+    date: formatSessionDate(raw.createdAt),
+    summary,
+    items,
+    hasWrong
+  }
+}
+
+function buildWrongHint(item) {
+  if (item.isCorrect) return ''
+  if (item.wordDiff && item.wordDiff.length > 0) {
+    const wrong = item.wordDiff.find(w => !w.ok && w.expected)
+    if (wrong) return `${wrong.word || '(漏写)'} → ${wrong.expected}`
+  }
+  if (item.userAnswer) return `写成 ${item.userAnswer} → ${item.content}`
+  return '未识别到'
+}

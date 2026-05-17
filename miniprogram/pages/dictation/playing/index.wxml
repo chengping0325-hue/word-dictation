@@ -2,16 +2,17 @@
 
   <statusbar-spacer />
 
-  <!-- 自定义导航栏（深色，由于走 navigationStyle: custom，需要自己画标题） -->
+  <!-- 自定义导航栏（深色,左上角返回按钮 + 居中标题） -->
   <view class="custom-navbar">
+    <view class="nav-back" bindtap="onBack">
+      <view class="nav-back-icon">←</view>
+    </view>
     <view class="nav-title">单词听写</view>
   </view>
 
-  <!-- 顶部栏 -->
+  <!-- 顶部栏:进度数字居中 -->
   <view class="top-row">
-    <view class="circle-btn" bindtap="onBack">←</view>
     <view class="progress-num">{{ currentIndex + 1 }} / {{ total }}</view>
-    <view class="circle-placeholder"></view>
   </view>
 
   <view class="progress-bars">
@@ -48,15 +49,15 @@
 
   <view class="controls">
     <view class="ctrl-btn" bindtap="onReplay">
-      <view class="ctrl-icon">↺</view>
+      <view class="ctrl-icon ctrl-icon-replay"></view>
       <view class="ctrl-label">重听</view>
     </view>
     <view class="ctrl-btn primary" bindtap="onTogglePause">
-      <view class="ctrl-icon">{{ isPaused ? '▶' : '⏸' }}</view>
+      <view class="ctrl-icon {{ isPaused ? 'ctrl-icon-play' : 'ctrl-icon-pause' }}"></view>
       <view class="ctrl-label">{{ isPaused ? '继续' : '暂停' }}</view>
     </view>
     <view class="ctrl-btn" bindtap="onNext">
-      <view class="ctrl-icon">⏭</view>
+      <view class="ctrl-icon ctrl-icon-next"></view>
       <view class="ctrl-label">下一个</view>
     </view>
   </view>

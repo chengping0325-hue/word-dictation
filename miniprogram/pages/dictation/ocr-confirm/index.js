@@ -43,9 +43,64 @@ Page({
     this._refresh(newItems)
   },
 
+  // 点击条目 → 弹输入框编辑
+  onEdit(e) {
+    const id = e.currentTarget.dataset.id
+    const target = this.data.items.find(i => i.id === id)
+    if (!target) return
+    wx.showModal({
+      title: '修改内容',
+      editable: true,                       // 关键:让 modal 变成输入框
+      placeholderText: '请输入正确的内容',
+      content: target.content,
+      confirmText: '保存',
+      cancelText: '取消',
+      success: (res) => {
+        if (!res.confirm) return
+        const newText = (res.content || '').trim()
+        if (newText.length === 0) {
+          wx.showToast({ title: '内容不能为空', icon: 'none' })
+          return
+        }
+        if (newText.length > 200) {
+          wx.showToast({ title: '内容过长', icon: 'none' })
+          return
+        }
+        const { detectType } = require('../../../services/type-detector')
+        const newItems = this.data.items.map(i =>
+          i.id === id ? { ...i, content: newText, type: detectType(newText), suspicious: false } : i
+        )
+        this._refresh(newItems)
+      }
+    })
+  },
+
   onAddManual() {
-    wx.showToast({ title: '请回主页手动输入', icon: 'none' })
-    // 简化：手动补充走主页输入框,不在确认页弹输入框
+    wx.showModal({
+      title: '补充内容',
+      editable: true,
+      placeholderText: '输入要添加的单词或句子',
+      content: '',
+      confirmText: '添加',
+      cancelText: '取消',
+      success: (res) => {
+        if (!res.confirm) return
+        const text = (res.content || '').trim()
+        if (text.length === 0) return
+        if (text.length > 200) {
+          wx.showToast({ title: '内容过长', icon: 'none' })
+          return
+        }
+        const { detectType } = require('../../../services/type-detector')
+        const newItem = {
+          id: `manual-${Date.now()}`,
+          content: text,
+          type: detectType(text),
+          suspicious: false
+        }
+        this._refresh(this.data.items.concat([newItem]))
+      }
+    })
   },
 
   onRetake() {

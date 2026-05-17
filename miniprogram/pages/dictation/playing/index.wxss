@@ -13,12 +13,37 @@ page {
 }
 
 .custom-navbar {
+  position: relative;
   height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 32rpx;
 }
+.nav-back {
+  position: absolute;
+  left: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-back-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #fff;
+  line-height: 1;
+}
+.nav-back:active .nav-back-icon { background: rgba(255,255,255,0.28); }
 .nav-title {
   font-size: 32rpx;
   font-weight: 600;
@@ -28,21 +53,9 @@ page {
 .top-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16rpx 36rpx 0;   /* 原型 padding-top:8px */
-}
-.circle-btn {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 36rpx;
+  padding: 16rpx 36rpx 0;
 }
-.circle-placeholder { width: 72rpx; }
 .progress-num {
   font-size: 30rpx;
   font-weight: 600;
@@ -149,19 +162,31 @@ page {
   height: 104rpx;
   border-radius: 50%;
   background: rgba(255,255,255,0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin: 0 auto 12rpx;
-  color: #fff;
-  font-size: 44rpx;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 48rpx 48rpx;
 }
 .ctrl-btn.primary .ctrl-icon {
   width: 136rpx;
   height: 136rpx;
-  background: #F59E0B;
-  font-size: 56rpx;
+  background-color: #F59E0B;
+  background-size: 64rpx 64rpx;
 }
+
+.ctrl-icon-replay {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='1 4 1 10 7 10'/><path d='M3.51 15a9 9 0 1 0 2.13-9.36L1 10'/></svg>");
+}
+.ctrl-icon-pause {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='4' width='4' height='16'/><rect x='14' y='4' width='4' height='16'/></svg>");
+}
+.ctrl-icon-play {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='5 3 19 12 5 21 5 3'/></svg>");
+}
+.ctrl-icon-next {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='5 4 15 12 5 20 5 4'/><line x1='19' y1='5' x2='19' y2='19'/></svg>");
+}
+
 .ctrl-label {
   font-size: 22rpx;
   opacity: 0.75;
