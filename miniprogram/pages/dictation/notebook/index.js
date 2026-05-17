@@ -112,10 +112,6 @@ function transformSession(raw) {
 
 function buildWrongHint(item) {
   if (item.isCorrect) return ''
-  if (item.wordDiff && item.wordDiff.length > 0) {
-    const wrong = item.wordDiff.find(w => !w.ok && w.expected)
-    if (wrong) return `${wrong.word || '(漏写)'} → ${wrong.expected}`
-  }
   if (item.userAnswer) return `写成 ${item.userAnswer} → ${item.content}`
   return '未识别到'
 }

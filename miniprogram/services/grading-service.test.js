@@ -94,7 +94,7 @@ checkTrue(r6.items[2].userAnswer === 'rice', 'rice 子串匹配自己')
 // "I like football" 不被任何 block 包含 → 走 jaccard,最像的 block
 checkTrue(r6.items[3].userAnswer != null, 'I like football 有 fallback 匹配')
 
-// OCR 把所有内容识别为一个大块的场景(常见!)
+// OCR 大块场景(常见!) — 子串匹配非互斥,所有短词 std 都拿到大块;长句 std 通过 Phase B 也拿到大块
 const r7 = gradeSession(
   [
     { content: 'Basketball', type: 'en_word' },
@@ -102,14 +102,27 @@ const r7 = gradeSession(
     { content: 'rice', type: 'en_word' },
     { content: 'I like football', type: 'en_sentence' }
   ],
-  ['Basketball football rice llike Basketball']  // 单一大块
+  ['Basketball football rice llike Basketball']
 )
-// 子串优先:前 3 个都包含在大块里 → 都拿大块作为 userAnswer
-checkTrue(r7.items[0].userAnswer === 'Basketball football rice llike Basketball', '大块场景: Basketball')
-checkTrue(r7.items[1].userAnswer === 'Basketball football rice llike Basketball', '大块场景: football')
-checkTrue(r7.items[2].userAnswer === 'Basketball football rice llike Basketball', '大块场景: rice')
-// "i like football" 不在大块的 normalize 中(块里是 "llike basketball")
-checkTrue(r7.items[3].userAnswer != null, '大块场景: I like football 有 fallback')
+checkTrue(r7.items[0].userAnswer === 'Basketball football rice llike Basketball', '大块场景: Basketball 子串匹配')
+checkTrue(r7.items[1].userAnswer === 'Basketball football rice llike Basketball', '大块场景: football 子串匹配')
+checkTrue(r7.items[2].userAnswer === 'Basketball football rice llike Basketball', '大块场景: rice 子串匹配')
+checkTrue(r7.items[3].userAnswer === 'Basketball football rice llike Basketball', '大块场景: I like football 兜底也拿大块')
+
+// 用户报告的核心场景:OCR 分多块,标准答案完全不匹配的句子也要显示 OCR 内容
+// std=[Basketball, football, rice, I like juice], OCR=[Basketball, football, rice, I like basketball]
+// 前 3 个子串匹配自己;第 4 个 std 找未用块"I like basketball"作为 userAnswer 显示
+const r9 = gradeSession(
+  [
+    { content: 'Basketball', type: 'en_word' },
+    { content: 'football', type: 'en_word' },
+    { content: 'rice', type: 'en_word' },
+    { content: 'I like juice', type: 'en_sentence' }
+  ],
+  ['Basketball', 'football', 'rice', 'I like basketball']
+)
+checkTrue(r9.items[3].userAnswer === 'I like basketball', '错误句子也显示 OCR 内容(不再"未识别到")')
+checkTrue(r9.items[3].isCorrect === false, '错误判定不变')
 
 // 旧 bug 回归: std="I like football" 不应错配到只含"football"的 block
 // (这是用户最早报的 "Basketball → football" 错乱 bug)

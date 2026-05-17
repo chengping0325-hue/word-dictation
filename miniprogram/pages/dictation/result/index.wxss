@@ -40,16 +40,14 @@
 .result-item:last-child { border-bottom: none; }
 
 .result-body { min-width: 0; }
-.result-word {
-  font-size: 32rpx;            /* 项 9 类别 A：判分结果 13→16px */
+/* 单词和句子样式强制一致 */
+.result-word,
+.result-word.sentence {
+  font-size: 32rpx;
   font-weight: 600;
   color: #0F172A;
   word-break: break-word;
-}
-.result-word.sentence {
-  font-size: 32rpx;
   line-height: 1.6;
-  font-weight: 500;
 }
 .result-word.wrong { color: #dc2626; }
 .result-word.not-found {

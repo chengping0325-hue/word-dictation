@@ -45,7 +45,7 @@
         data-index="{{ index }}"
         bindtap="onEditItem"
         bindlongpress="onLongPress"
-        catchtouchmove="onTouchMove"
+        bindtouchmove="onTouchMove"
         bindtouchend="onTouchEnd"
         bindtouchcancel="onTouchEnd"
       >

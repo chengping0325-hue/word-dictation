@@ -19,14 +19,8 @@
       <type-tag type="{{ item.type }}" />
 
       <view class="flex-1 result-body">
-        <!-- 第一行:OCR 识别到的内容 -->
-        <block wx:if="{{ item.wordDiff && item.wordDiff.length > 0 }}">
-          <view class="result-word sentence">
-            <text wx:for="{{ item.wordDiff }}" wx:for-item="w" wx:key="word" wx:for-index="wi"
-                  class="{{ !w.ok ? 'word-bad' : '' }}">{{ w.word }}<text wx:if="{{ wi < item.wordDiff.length - 1 }}"> </text></text>
-          </view>
-        </block>
-        <view wx:elif="{{ item.userAnswer }}"
+        <!-- 第一行:OCR 识别到的内容(整句红/黑,不做词级 diff) -->
+        <view wx:if="{{ item.userAnswer }}"
               class="result-word {{ item.isCorrect ? '' : 'wrong' }} {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }}">{{ item.userAnswer }}</view>
         <view wx:else class="result-word not-found">未识别到</view>
 

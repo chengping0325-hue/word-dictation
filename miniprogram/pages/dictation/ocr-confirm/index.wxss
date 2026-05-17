@@ -70,15 +70,13 @@
   flex-shrink: 0;
 }
 
-.item-text {
+/* 单词和句子样式强制完全一致(防止任何 sentence 类的覆盖) */
+.item-text,
+.item-text.sentence {
   font-size: 28rpx;
   font-weight: 600;
   color: #0F172A;
   word-break: break-word;
-}
-.item-text.sentence {
-  font-size: 28rpx;            /* 与单词统一 */
-  font-weight: 500;
   line-height: 1.5;
 }
 .suspicious .item-text {

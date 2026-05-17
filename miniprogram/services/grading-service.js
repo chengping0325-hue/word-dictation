@@ -25,8 +25,8 @@ function normalize(text) {
  * @returns {{ score:{correct,total,rate}, items: Array }}
  */
 function gradeSession(list, ocrTexts) {
-  // 1. OCR 文字块合并,做规范化预处理(去序号)
-  const cleanedBlocks = (ocrTexts || []).map(stripSequenceMarker)
+  // 1. OCR 文字块去序号,过滤空
+  const cleanedBlocks = (ocrTexts || []).map(stripSequenceMarker).filter(b => normalize(b).length > 0)
   const normalizedFull = normalize(cleanedBlocks.join(' '))
 
   // 2. isCorrect 判断:按 PRD 4.1 "无顺序匹配"
@@ -37,12 +37,41 @@ function gradeSession(list, ocrTexts) {
     return { content: item.content, type: item.type, isCorrect }
   })
 
-  // 3. userAnswer 匹配(非互斥,只为展示"识别到的内容"):
-  //    每条 std 独立找最佳 OCR 块,不影响其它 std 的匹配。
-  //    优先级: 子串包含 > jaccard 相似度
+  // 3. userAnswer 匹配(目的:OCR 识别到的内容尽量都显示)
+  // Phase A: 子串匹配(非互斥) — 多条 std 可共用同一 block(应对 OCR 大块场景)
   items.forEach((it) => {
-    const ua = findUserAnswer(it.content, cleanedBlocks)
-    if (ua) it.userAnswer = ua
+    const stdN = normalize(it.content)
+    if (!stdN) return
+    for (let i = 0; i < cleanedBlocks.length; i++) {
+      if (normalize(cleanedBlocks[i]).indexOf(stdN) >= 0) {
+        it.userAnswer = cleanedBlocks[i]
+        return
+      }
+    }
+  })
+
+  // Phase B: 未匹配的 std → 从"长度合适"的 block 中找 jaccard 最高
+  //   长度合适: block 长度 >= std 长度 * 0.7,防止句子被短词错配
+  //   找不到合适长度时,扩到所有 block
+  items.forEach(it => {
+    if (it.userAnswer) return
+    const stdN = normalize(it.content)
+    if (!stdN) return
+    const minLen = Math.ceil(stdN.length * 0.7)
+    let pool = cleanedBlocks.filter(b => normalize(b).length >= minLen)
+    if (pool.length === 0) pool = cleanedBlocks
+    let best = null
+    let bestScore = -1
+    for (const block of pool) {
+      const score = jaccard(stdN, normalize(block))
+      if (score > bestScore) {
+        bestScore = score
+        best = block
+      }
+    }
+    if (best && bestScore > 0) {
+      it.userAnswer = best
+    }
   })
 
   // 4. 英文句子错的话做词级 diff
@@ -60,43 +89,6 @@ function gradeSession(list, ocrTexts) {
     score: { correct, total, rate },
     items
   }
-}
-
-/**
- * 给一条标准答案找匹配的 OCR 文字块(用于展示 userAnswer,非互斥)
- * 优先级:
- *  1. 子串匹配:某 block 的 normalize 包含 std 的 normalize → 直接选该 block
- *     (用户写对了某词的场景,保证不被错配到相似的别的词)
- *  2. jaccard 相似度:找最像的,阈值 0.3
- *  没匹配上返回 null,UI 显示"未识别到"
- */
-function findUserAnswer(standard, blocks) {
-  if (!blocks || blocks.length === 0) return null
-  const stdN = normalize(standard)
-  if (stdN.length === 0) return null
-
-  // 子串优先:用户写对了某词,直接选包含该词的 block
-  for (const block of blocks) {
-    const blkN = normalize(block)
-    if (blkN.length === 0) continue
-    if (blkN.indexOf(stdN) >= 0) {
-      return block
-    }
-  }
-
-  // 退而求其次:找 jaccard 最高的 block
-  let best = null
-  let bestScore = 0
-  for (const block of blocks) {
-    const blkN = normalize(block)
-    if (blkN.length === 0) continue
-    const score = jaccard(stdN, blkN)
-    if (score > bestScore) {
-      best = block
-      bestScore = score
-    }
-  }
-  return bestScore >= 0.3 ? best : null
 }
 
 /**
