@@ -163,13 +163,60 @@ Page({
   },
 
   // ── 列表 ──
-  // 注:从直接 wxml 渲染调用,event.currentTarget.dataset.id 拿到 id
   onDelete(e) {
     const id = e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id
     if (!id) return
     const newList = this._withDisplayY(this.data.pendingList.filter(it => it.id !== id))
     this.setData({ pendingList: newList })
     this._persistList(newList)
+  },
+
+  // 点击条目 → 弹 wx.showModal editable 修改内容
+  // 注意:长按拖拽后松手时 tap 也会触发,用 _justDragged 标记防误触
+  onEditItem(e) {
+    if (this._justDragged) {
+      this._justDragged = false
+      return
+    }
+    const id = e.currentTarget.dataset.id
+    const target = this.data.pendingList.find(it => it.id === id)
+    if (!target) return
+
+    wx.showModal({
+      title: '修改内容',
+      editable: true,
+      placeholderText: '输入单词或句子',
+      content: target.content,
+      confirmText: '保存',
+      cancelText: '取消',
+      success: (res) => {
+        if (!res.confirm) return
+        const newText = (res.content || '').trim()
+        if (newText.length < MIN_LEN) {
+          wx.showToast({ title: '内容不能为空', icon: 'none' })
+          return
+        }
+        if (newText.length > MAX_LEN) {
+          wx.showToast({ title: `单条最多 ${MAX_LEN} 字`, icon: 'none' })
+          return
+        }
+        // 去重(除自己外)
+        const newNorm = normalize(newText)
+        const dup = this.data.pendingList.some(it => it.id !== id && normalize(it.content) === newNorm)
+        if (dup) {
+          wx.showToast({ title: '已存在', icon: 'none' })
+          return
+        }
+        // 更新该条 + 重算 type
+        const newList = this._withDisplayY(
+          this.data.pendingList.map(it =>
+            it.id === id ? Object.assign({}, it, { content: newText, type: detectType(newText) }) : it
+          )
+        )
+        this.setData({ pendingList: newList })
+        this._persistList(newList)
+      }
+    })
   },
 
   onClearAll() {
@@ -200,6 +247,8 @@ Page({
     this._dragStartY = touch.clientY
     this._dragStartIndex = index
     this._orderIds = this.data.pendingList.map(it => it.id)
+    // 标记:长按已激活,touchend 时 tap 会一并触发,需要跳过 tap 的编辑逻辑
+    this._justDragged = true
 
     // 触觉反馈
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })

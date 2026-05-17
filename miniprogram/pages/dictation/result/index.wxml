@@ -51,8 +51,12 @@
   </view>
 
   <view class="bottom-buttons">
-    <view class="btn-secondary" bindtap="onViewNotebook">查看单词本</view>
-    <view class="btn-blue" bindtap="onRetry">重新听写</view>
+    <view class="btn-row">
+      <view class="btn-secondary" bindtap="onRetry">重新听写</view>
+      <view class="btn-secondary {{ wrongCount === 0 ? 'disabled' : '' }}"
+            bindtap="onRetryWrong">重新听写错词</view>
+      <view class="btn-blue" bindtap="onViewNotebook">查看单词本</view>
+    </view>
   </view>
 
 </view>

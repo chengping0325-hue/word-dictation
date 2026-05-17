@@ -53,11 +53,11 @@
         </view>
       </block>
 
-      <!-- 每个日期组底部的"重新听写" -->
+      <!-- 每个日期组底部的"重新听写":Tab 区分文案 -->
       <view class="card-action">
         <view class="btn-card-action"
               data-session-id="{{ session.id }}"
-              bindtap="onReDictateSession">重新听写</view>
+              bindtap="onReDictateSession">{{ filter === 'wrong' ? '重新听写错词' : '重新听写' }}</view>
       </view>
     </view>
   </block>

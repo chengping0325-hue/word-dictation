@@ -118,17 +118,15 @@
   font-size: 28rpx;
   flex-shrink: 0;
 }
-.drag-item .word-text {
+/* 单词和句子样式强制完全一致(防止任何 sentence 类的继承覆盖) */
+.drag-item .word-text,
+.drag-item .word-text.sentence {
   flex: 1;
   min-width: 0;
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 600;
   color: #0F172A;
   word-break: break-word;
-}
-.drag-item .word-text.sentence {
-  font-size: 32rpx;
-  font-weight: 500;
   line-height: 1.4;
 }
 .drag-item .word-del {

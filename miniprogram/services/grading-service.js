@@ -25,32 +25,31 @@ function normalize(text) {
  * @returns {{ score:{correct,total,rate}, items: Array }}
  */
 function gradeSession(list, ocrTexts) {
-  // 1. OCR 文字块合并，做规范化预处理
-  //    去除孩子答卷上常见的"序号""1." "(1)"等前缀
+  // 1. OCR 文字块合并,做规范化预处理(去序号)
   const cleanedBlocks = (ocrTexts || []).map(stripSequenceMarker)
   const normalizedFull = normalize(cleanedBlocks.join(' '))
 
-  // 2. 对清单每条判定
-  const items = (list || []).map(item => {
+  // 2. isCorrect 判断:按 PRD 4.1 "无顺序匹配"
+  const stdList = list || []
+  const items = stdList.map(item => {
     const standardNormalized = normalize(item.content)
     const isCorrect = standardNormalized.length > 0 && normalizedFull.indexOf(standardNormalized) >= 0
+    return { content: item.content, type: item.type, isCorrect }
+  })
 
-    const result = {
-      content: item.content,
-      type: item.type,
-      isCorrect
+  // 3. userAnswer 匹配(非互斥,只为展示"识别到的内容"):
+  //    每条 std 独立找最佳 OCR 块,不影响其它 std 的匹配。
+  //    优先级: 子串包含 > jaccard 相似度
+  items.forEach((it) => {
+    const ua = findUserAnswer(it.content, cleanedBlocks)
+    if (ua) it.userAnswer = ua
+  })
+
+  // 4. 英文句子错的话做词级 diff
+  items.forEach(it => {
+    if (!it.isCorrect && it.userAnswer && it.type === 'en_sentence') {
+      it.wordDiff = wordLevelDiff(it.content, it.userAnswer)
     }
-
-    // 无论对错都记 userAnswer(展示"识别到的内容") — 正确时通常等于 content 或其变体
-    const userAnswer = findBestMatch(item.content, cleanedBlocks)
-    if (userAnswer) result.userAnswer = userAnswer
-
-    // 英文句子且错 → 词级 diff
-    if (!isCorrect && userAnswer && item.type === 'en_sentence') {
-      result.wordDiff = wordLevelDiff(item.content, userAnswer)
-    }
-
-    return result
   })
 
   const correct = items.filter(i => i.isCorrect).length
@@ -61,6 +60,43 @@ function gradeSession(list, ocrTexts) {
     score: { correct, total, rate },
     items
   }
+}
+
+/**
+ * 给一条标准答案找匹配的 OCR 文字块(用于展示 userAnswer,非互斥)
+ * 优先级:
+ *  1. 子串匹配:某 block 的 normalize 包含 std 的 normalize → 直接选该 block
+ *     (用户写对了某词的场景,保证不被错配到相似的别的词)
+ *  2. jaccard 相似度:找最像的,阈值 0.3
+ *  没匹配上返回 null,UI 显示"未识别到"
+ */
+function findUserAnswer(standard, blocks) {
+  if (!blocks || blocks.length === 0) return null
+  const stdN = normalize(standard)
+  if (stdN.length === 0) return null
+
+  // 子串优先:用户写对了某词,直接选包含该词的 block
+  for (const block of blocks) {
+    const blkN = normalize(block)
+    if (blkN.length === 0) continue
+    if (blkN.indexOf(stdN) >= 0) {
+      return block
+    }
+  }
+
+  // 退而求其次:找 jaccard 最高的 block
+  let best = null
+  let bestScore = 0
+  for (const block of blocks) {
+    const blkN = normalize(block)
+    if (blkN.length === 0) continue
+    const score = jaccard(stdN, blkN)
+    if (score > bestScore) {
+      best = block
+      bestScore = score
+    }
+  }
+  return bestScore >= 0.3 ? best : null
 }
 
 /**
@@ -153,26 +189,6 @@ function stripSequenceMarker(text) {
     .replace(/^\s*[（(]?\d+[）)]\s*[.、)]?\s*/, '')
     .replace(/^\s*[①-⑩]\s*/, '')
     .trim()
-}
-
-function findBestMatch(standard, blocks) {
-  if (!blocks || blocks.length === 0) return null
-  const target = normalize(standard)
-  if (target.length === 0) return null
-
-  let best = null
-  let bestScore = 0
-  for (const block of blocks) {
-    const candidate = normalize(block)
-    if (candidate.length === 0) continue
-    const score = jaccard(target, candidate)
-    if (score > bestScore) {
-      best = block
-      bestScore = score
-    }
-  }
-  // 太低就当没找到（避免拿一个完全无关的词块当答案）
-  return bestScore >= 0.3 ? best : null
 }
 
 function jaccard(a, b) {

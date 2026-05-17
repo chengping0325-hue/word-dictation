@@ -77,7 +77,7 @@
   word-break: break-word;
 }
 .item-text.sentence {
-  font-size: 26rpx;
+  font-size: 28rpx;            /* 与单词统一 */
   font-weight: 500;
   line-height: 1.5;
 }

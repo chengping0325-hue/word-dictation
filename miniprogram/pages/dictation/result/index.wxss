@@ -83,33 +83,58 @@
 
 .bottom-buttons {
   display: flex;
+  flex-direction: column;
   gap: 16rpx;
   padding: 28rpx 32rpx 0;
 }
+.btn-row {
+  display: flex;
+  gap: 12rpx;
+}
 .btn-secondary {
   flex: 1;
+  min-width: 0;
   height: 88rpx;
-  border-radius: 24rpx;
+  padding: 0 12rpx;
+  border-radius: 22rpx;
   background: #fff;
   border: 3rpx solid #bfdbfe;
   color: #2563EB;
-  font-size: 30rpx;            /* 项 9 次按钮 15px */
+  font-size: 26rpx;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  white-space: nowrap;
+}
+.btn-secondary.disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 .btn-blue {
   flex: 1;
+  min-width: 0;
   height: 88rpx;
-  border-radius: 24rpx;
+  padding: 0 12rpx;
+  border-radius: 22rpx;
   background: #2563EB;
   color: #fff;
-  font-size: 32rpx;            /* 项 9 主按钮 16px */
+  font-size: 26rpx;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  white-space: nowrap;
 }
+.btn-link {
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #64748b;
+  font-weight: 500;
+}
+.btn-link:active { opacity: 0.6; }

@@ -12,13 +12,13 @@
 .word-text {
   flex: 1;
   min-width: 0;
-  font-size: 34rpx;            /* 项 9 类别 A：清单条目 14→17px */
+  font-size: 32rpx;            /* 单词与句子统一 16px */
   font-weight: 600;
   color: #0F172A;
   word-break: break-word;
 }
 .word-text.sentence {
-  font-size: 32rpx;            /* 句子稍小，保持 16px */
+  font-size: 32rpx;
   font-weight: 500;
   line-height: 1.5;
 }

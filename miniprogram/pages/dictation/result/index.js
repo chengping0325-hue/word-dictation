@@ -143,9 +143,34 @@ Page({
     wx.reLaunch({ url: '/pages/dictation/notebook/index' })
   },
 
+  // 全部条目作为新清单 → reLaunch 主页
   onRetry() {
+    this._reDictate(this.data.items)
+  },
+
+  // 只把错的条目作为新清单
+  onRetryWrong() {
+    if (this.data.wrongCount === 0) return
+    const wrongItems = this.data.items.filter(it => !it.isCorrect)
+    this._reDictate(wrongItems)
+  },
+
+  _reDictate(sourceItems) {
+    const list = (sourceItems || []).map(it => ({
+      id: `re-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      content: it.content,
+      type: it.type
+    }))
+    if (list.length === 0) {
+      wx.showToast({ title: '没有可听写的内容', icon: 'none' })
+      return
+    }
     const app = getApp()
-    app.globalData.currentDictation = null
+    app.globalData.currentDictation = {
+      list,
+      readCount: 2,
+      interval: 5
+    }
     app.globalData.currentResult = null
     cache.clearPendingList()
     wx.reLaunch({ url: '/pages/dictation/index/index' })

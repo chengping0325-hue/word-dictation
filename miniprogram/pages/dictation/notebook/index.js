@@ -46,19 +46,29 @@ Page({
     this._loadSessions()
   },
 
-  // 点该 session 卡片底部的"重新听写"
-  // 行为：把该 session 全部条目（不论对错）作为新清单 reLaunch 到主页
+  // 卡片底部"重新听写" / "重新听写错词"
+  // - 全部记录 Tab → 用 session.items 全部条目
+  // - 仅错词 Tab   → 只用 !isCorrect 的条目
   onReDictateSession(e) {
     const sessionId = e.currentTarget.dataset.sessionId
     const session = this.data.sessions.find(s => s.id === sessionId)
     if (!session) return
 
-    const list = (session.items || []).map(it => ({
+    let source = session.items || []
+    if (this.data.filter === 'wrong') {
+      source = source.filter(it => !it.isCorrect)
+    }
+
+    if (source.length === 0) {
+      wx.showToast({ title: '没有可听写的内容', icon: 'none' })
+      return
+    }
+
+    const list = source.map(it => ({
       id: `re-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       content: it.content,
       type: it.type
     }))
-    if (list.length === 0) return
 
     const app = getApp()
     app.globalData.currentDictation = {

@@ -43,6 +43,7 @@
         style="transform: translateY({{ item.displayY }}rpx); transition: {{ dragId === item.id ? 'none' : 'transform 0.18s ease' }}; z-index: {{ dragId === item.id ? 100 : 1 }};"
         data-id="{{ item.id }}"
         data-index="{{ index }}"
+        bindtap="onEditItem"
         bindlongpress="onLongPress"
         catchtouchmove="onTouchMove"
         bindtouchend="onTouchEnd"
