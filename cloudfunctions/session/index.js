@@ -37,5 +37,30 @@ exports.main = async (event) => {
     }
   }
 
+  // 用户在判分结果页手动修正某条对错 → 更新 session 的 score + items
+  if (action === 'update') {
+    if (!data || !data._id || !data.score || !Array.isArray(data.items)) {
+      return { success: false, error: '入参不完整' }
+    }
+
+    try {
+      // 验证该 session 属于当前用户(云函数下 db 操作不受 openid 限制,需手动 check)
+      const existing = await db.collection('sessions').doc(data._id).get()
+      if (!existing.data || existing.data._openid !== wxContext.OPENID) {
+        return { success: false, error: '无权修改此记录' }
+      }
+      await db.collection('sessions').doc(data._id).update({
+        data: {
+          score: data.score,
+          items: data.items
+        }
+      })
+      return { success: true }
+    } catch (err) {
+      console.error('[session update] failed:', err && err.message)
+      return { success: false, error: (err && err.message) || '更新失败' }
+    }
+  }
+
   return { success: false, error: `未知 action: ${action}` }
 }

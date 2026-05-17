@@ -1,5 +1,5 @@
 // pages/dictation/result/index.js
-// Phase 4：onLoad 时把 currentResult 写入云数据库（仅首次进入；redirectTo 进入算首次）
+// Phase 4+5：onLoad 首次保存到云数据库;支持手动切换条目对错(本地+云同步)
 const { callCloudFunction } = require('../../../utils/cloud')
 const cache = require('../../../utils/cache')
 
@@ -10,6 +10,9 @@ Page({
     rateText: '0',
     wrongCount: 0
   },
+
+  // 实例级 debounce timer
+  _syncTimer: null,
 
   onLoad() {
     const app = getApp()
@@ -27,7 +30,8 @@ Page({
       wrongCount
     })
 
-    // 保存到云数据库（只触发一次：用 result.savedToCloud 标记防重）
+    // 保存到云数据库(只触发一次:用 r.savedToCloud 防重)
+    // 拿到 _id 后存到 r.sessionId,供后续 onToggleCorrect 调 update
     if (!r.savedToCloud) {
       r.savedToCloud = true
       const cd = app.globalData.currentDictation || {}
@@ -43,13 +47,95 @@ Page({
           items: r.items
         }
       }).then(res => {
-        if (!res || !res.success) {
+        if (res && res.success && res._id) {
+          r.sessionId = res._id
+        } else {
           console.warn('[result] 保存 session 失败:', res && res.error)
         }
       }).catch(err => {
         console.error('[result] 保存 session 异常:', err && err.message)
-        // 不打断用户：保存失败也让结果显示出来，最多单词本里少一条
       })
+    }
+  },
+
+  // 手动切换某条对错(用户修正 OCR 误判)
+  onToggleCorrect(e) {
+    const index = e.currentTarget.dataset.index
+    if (index == null) return
+    const items = this.data.items.slice()
+    const old = items[index]
+    if (!old) return
+    items[index] = Object.assign({}, old, { isCorrect: !old.isCorrect })
+
+    const correct = items.filter(i => i.isCorrect).length
+    const total = items.length
+    const rate = total > 0 ? correct / total : 0
+    const wrongCount = items.filter(i => !i.isCorrect).length
+    const newScore = { correct, total, rate }
+
+    this.setData({
+      items,
+      score: newScore,
+      rateText: Math.round(rate * 100).toString(),
+      wrongCount
+    })
+
+    // 同步到 globalData(影响单词本/重新听写 等下游)
+    const app = getApp()
+    if (app.globalData.currentResult) {
+      app.globalData.currentResult.items = items
+      app.globalData.currentResult.score = newScore
+    }
+
+    // debounce 同步到云数据库(用户可能快速连点多次)
+    this._scheduleSync()
+  },
+
+  _scheduleSync() {
+    if (this._syncTimer) clearTimeout(this._syncTimer)
+    this._syncTimer = setTimeout(() => {
+      this._syncTimer = null
+      const app = getApp()
+      const r = app.globalData.currentResult
+      if (!r || !r.sessionId) {
+        // 还没拿到 sessionId(保存中或失败)→ 再等一会儿重试一次
+        if (r && !r.sessionId) setTimeout(() => this._scheduleSync(), 800)
+        return
+      }
+      callCloudFunction('session', {
+        action: 'update',
+        data: {
+          _id: r.sessionId,
+          score: r.score,
+          items: r.items
+        }
+      }).then(res => {
+        if (!res || !res.success) {
+          console.warn('[result] 同步修改失败:', res && res.error)
+        }
+      }).catch(err => {
+        console.error('[result] 同步修改异常:', err && err.message)
+      })
+    }, 500)
+  },
+
+  onUnload() {
+    // 离开前如果还有待同步,立刻 flush 一次(避免修改丢失)
+    if (this._syncTimer) {
+      clearTimeout(this._syncTimer)
+      this._syncTimer = null
+      const app = getApp()
+      const r = app.globalData.currentResult
+      if (r && r.sessionId) {
+        callCloudFunction('session', {
+          action: 'update',
+          data: {
+            _id: r.sessionId,
+            score: r.score,
+            items: r.items
+          }
+        }).catch(() => {})
+      }
     }
   },
 
@@ -58,7 +144,6 @@ Page({
   },
 
   onRetry() {
-    // 清掉当前听写 + 本地缓存的清单，回主页变成空清单
     const app = getApp()
     app.globalData.currentDictation = null
     app.globalData.currentResult = null

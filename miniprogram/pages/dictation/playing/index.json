@@ -1,7 +1,6 @@
 {
-  "usingComponents": {
-    "statusbar-spacer": "/components/statusbar-spacer/index"
-  },
-  "navigationStyle": "custom",
+  "usingComponents": {},
+  "navigationBarTitleText": "单词听写",
+  "navigationBarBackgroundColor": "#1e3a8a",
   "navigationBarTextStyle": "white"
 }

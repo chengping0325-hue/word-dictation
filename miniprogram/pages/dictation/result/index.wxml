@@ -37,8 +37,10 @@
         </view>
       </view>
 
-      <view class="result-badge {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}">
-        {{ item.isCorrect ? '✓ 正确' : '✗ 错' }}
+      <view class="result-badge tappable {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}"
+            data-index="{{ index }}"
+            bindtap="onToggleCorrect">
+        {{ item.isCorrect ? '✓ 正确' : '✗ 错误' }}
       </view>
     </view>
   </view>

@@ -197,14 +197,19 @@ Page({
         if (this._replayFlag) continue
       }
     }
-    this._skipFlag = false
+    // 注意:不在这里 reset _skipFlag,让信号能传到外层 _waitIntervalCancellable
+    // 由外层消化(立即 return 'skip' 并跳过间隔等待 → 直接进入下一条)
   },
 
   async _waitIntervalCancellable(ms) {
-    while (this.data.isPaused && !this._cancelled) {
+    // 暂停态轮询,期间也响应 skip/replay
+    while (this.data.isPaused && !this._cancelled && !this._skipFlag && !this._replayFlag) {
       await this._sleep(80)
     }
     if (this._cancelled) return 'cancelled'
+    // 进入 sleep 前预检:如果 _playReads 退出时已带着 skip/replay 信号,立即响应不要再等
+    if (this._skipFlag) { this._skipFlag = false; return 'skip' }
+    if (this._replayFlag) { this._replayFlag = false; return 'replay' }
 
     await this._cancellableSleep(ms)
 
@@ -295,6 +300,10 @@ Page({
 
   onNext() {
     this._skipFlag = true
+    // 暂停态下按"下一个"自动恢复播放(用户预期:切换后下一条直接播)
+    if (this.data.isPaused) {
+      this.setData({ isPaused: false })
+    }
     tts.stopAudio()
     this._abortSleep()
   },

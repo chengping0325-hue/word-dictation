@@ -75,6 +75,12 @@
 .correction-label { color: #94a3b8; margin-right: 8rpx; }
 .correction .good-text { color: #16a34a; font-weight: 600; }
 
+/* 可点击的徽章:加 tap 高亮反馈,扩大 tap 区域 */
+.result-badge.tappable {
+  padding: 10rpx 20rpx;
+}
+.result-badge.tappable:active { opacity: 0.65; transform: scale(0.95); }
+
 .bottom-buttons {
   display: flex;
   gap: 16rpx;
