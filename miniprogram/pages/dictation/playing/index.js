@@ -11,8 +11,6 @@
 const tts = require('../../../services/tts-service')
 const { getTypeLabel, getLang } = require('../../../services/type-detector')
 
-const GAP_BETWEEN_READS_MS = 200
-
 Page({
   data: {
     list: [],
@@ -190,7 +188,11 @@ Page({
 
       r++
       if (r <= this.data.readCount) {
-        await this._cancellableSleep(GAP_BETWEEN_READS_MS)
+        // 两次朗读之间也按 settings.interval 等待(跟条目间隔一致)
+        // 期间维持 isWaitingInterval 态,UI 显示"间隔等待中"
+        this.setData({ isWaitingInterval: true })
+        await this._cancellableSleep(this.data.interval * 1000)
+        this.setData({ isWaitingInterval: false })
         if (this._cancelled || this._skipFlag) break
         if (this._replayFlag) continue
       }

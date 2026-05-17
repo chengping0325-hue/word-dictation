@@ -8,8 +8,8 @@
     <view class="q-content">{{ currentItem.content }}</view>
     <view class="q-hint">请家长核对答卷上是否写对</view>
     <view class="q-buttons">
-      <view class="btn-correct" bindtap="onCorrect">✓ 写对了</view>
       <view class="btn-wrong" bindtap="onWrong">✗ 写错了</view>
+      <view class="btn-correct" bindtap="onCorrect">✓ 写对了</view>
     </view>
   </view>
 

@@ -19,24 +19,19 @@
       <type-tag type="{{ item.type }}" />
 
       <view class="flex-1 result-body">
-        <!-- 大字:你拍照写的内容 -->
-        <!-- 正确:绿/默认色显示 content;错误:红色显示 userAnswer;OCR 没找到:灰字"未识别到" -->
-        <block wx:if="{{ item.isCorrect }}">
-          <!-- 英文句子词级 diff 仅用于"错"时高亮,正确就直接显示 content -->
-          <view class="result-word {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }}">{{ item.content }}</view>
-        </block>
-        <block wx:elif="{{ item.wordDiff && item.wordDiff.length > 0 }}">
+        <!-- 第一行:OCR 识别到的内容 -->
+        <block wx:if="{{ item.wordDiff && item.wordDiff.length > 0 }}">
           <view class="result-word sentence">
             <text wx:for="{{ item.wordDiff }}" wx:for-item="w" wx:key="word" wx:for-index="wi"
                   class="{{ !w.ok ? 'word-bad' : '' }}">{{ w.word }}<text wx:if="{{ wi < item.wordDiff.length - 1 }}"> </text></text>
           </view>
         </block>
         <view wx:elif="{{ item.userAnswer }}"
-              class="result-word wrong {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }}">{{ item.userAnswer }}</view>
+              class="result-word {{ item.isCorrect ? '' : 'wrong' }} {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }}">{{ item.userAnswer }}</view>
         <view wx:else class="result-word not-found">未识别到</view>
 
-        <!-- 小字:正确答案 -->
-        <view wx:if="{{ !item.isCorrect }}" class="correction">
+        <!-- 第二行:始终显示正确答案 -->
+        <view class="correction">
           <text class="correction-label">正确答案:</text>
           <text class="good-text">{{ item.content }}</text>
         </view>

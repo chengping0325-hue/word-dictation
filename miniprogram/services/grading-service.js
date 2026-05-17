@@ -41,15 +41,13 @@ function gradeSession(list, ocrTexts) {
       isCorrect
     }
 
-    if (!isCorrect) {
-      // 在 OCR 文字块里挑一个跟 standard 最相似的，作为"用户答案"展示
-      const userAnswer = findBestMatch(item.content, cleanedBlocks)
-      if (userAnswer) result.userAnswer = userAnswer
+    // 无论对错都记 userAnswer(展示"识别到的内容") — 正确时通常等于 content 或其变体
+    const userAnswer = findBestMatch(item.content, cleanedBlocks)
+    if (userAnswer) result.userAnswer = userAnswer
 
-      // 英文句子做词级 diff
-      if (item.type === 'en_sentence' && userAnswer) {
-        result.wordDiff = wordLevelDiff(item.content, userAnswer)
-      }
+    // 英文句子且错 → 词级 diff
+    if (!isCorrect && userAnswer && item.type === 'en_sentence') {
+      result.wordDiff = wordLevelDiff(item.content, userAnswer)
     }
 
     return result

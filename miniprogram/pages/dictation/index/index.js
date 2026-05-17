@@ -11,7 +11,7 @@ const MAX_LEN = 200
 const MAX_ITEMS = 50
 const MIN_READ = 1
 const MAX_READ = 5
-const MIN_INTERVAL = 3
+const MIN_INTERVAL = 1
 const MAX_INTERVAL = 30
 
 // 拖拽：固定行高 100rpx
