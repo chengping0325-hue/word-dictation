@@ -90,6 +90,70 @@
   font-weight: 600;
 }
 
+/* ── 拖拽列表 ── */
+.drag-list {
+  position: relative;
+}
+.drag-item {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 0;
+  border-bottom: 1rpx solid #f1f5fd;
+  box-sizing: border-box;
+  background: #fff;
+  will-change: transform;
+}
+.drag-item:last-child { border-bottom: none; }
+
+.drag-item .drag-handle {
+  width: 40rpx;
+  text-align: center;
+  color: #cbd5e1;
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+.drag-item .word-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #0F172A;
+  word-break: break-word;
+}
+.drag-item .word-text.sentence {
+  font-size: 32rpx;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.drag-item .word-del {
+  width: 40rpx;
+  height: 40rpx;
+  padding: 20rpx;
+  box-sizing: content-box;
+  margin: -20rpx -20rpx -20rpx 0;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.drag-item.dragging {
+  background: #f8fafc;
+  box-shadow: 0 12rpx 32rpx rgba(15, 23, 42, 0.18);
+  border-radius: 16rpx;
+  border-bottom: none;
+  transform-origin: center;
+}
+.drag-item.dragging .drag-handle { color: #2563EB; }
+
 .empty {
   padding: 64rpx 0;
   text-align: center;

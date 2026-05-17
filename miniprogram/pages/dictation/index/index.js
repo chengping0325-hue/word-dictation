@@ -14,6 +14,9 @@ const MAX_READ = 5
 const MIN_INTERVAL = 3
 const MAX_INTERVAL = 30
 
+// 拖拽：固定行高 100rpx
+const ROW_HEIGHT_RPX = 100
+
 // 判定 OCR 识别结果是否可疑（含数字或非常规字符）→ UI 高亮提醒
 function looksSuspicious(text) {
   if (!text || text.length < 1) return true
@@ -27,10 +30,23 @@ function looksSuspicious(text) {
 Page({
   data: {
     inputValue: '',
-    currentType: '',     // 'en_word' | 'cn_word' | 'en_sentence' | 'cn_sentence' | ''
-    typeLabel: '',       // 输入框下的实时 tag 文案
-    pendingList: [],
-    settings: { readCount: 2, interval: 5 }
+    currentType: '',
+    typeLabel: '',
+    pendingList: [],          // 每项含 { id, content, type, displayY }
+    settings: { readCount: 2, interval: 5 },
+    dragId: null              // 当前正在拖拽的 item id
+  },
+
+  // 实例级状态（不放 data 避免渲染开销）
+  _rowHeightPx: 0,            // 一行的 px 高度（屏幕宽 / 750 * 100rpx）
+  _dragStartY: 0,             // 触摸起始 y(client)
+  _dragStartIndex: -1,        // 拖拽起始时该 item 的 index
+  _orderIds: [],              // 当前可见的 id 顺序数组（拖拽过程中动态变化）
+
+  onReady() {
+    // 一次性计算 rpx → px 换算
+    const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync()
+    this._rowHeightPx = info.windowWidth / 750 * ROW_HEIGHT_RPX
   },
 
   onLoad() {
@@ -50,10 +66,10 @@ Page({
   _restore() {
     const app = getApp()
 
-    // 「重新听写」入口（来自单词本/判分结果页）：globalData.currentDictation.list 已被预填充
+    // 「重新听写」入口
     const pending = (app.globalData.currentDictation || {}).list
     if (Array.isArray(pending) && pending.length > 0) {
-      this.setData({ pendingList: pending })
+      this.setData({ pendingList: this._withDisplayY(pending) })
       cache.setPendingList(pending)
       app.globalData.currentDictation = null
       return
@@ -61,13 +77,23 @@ Page({
 
     // 普通进入：从缓存恢复
     this.setData({
-      pendingList: cache.getPendingList(),
+      pendingList: this._withDisplayY(cache.getPendingList()),
       settings: cache.getSettings()
     })
   },
 
+  // 给清单每项加 displayY（基于其在数组中的 index 计算）
+  _withDisplayY(list) {
+    return (list || []).map((it, i) => Object.assign({}, it, { displayY: i * ROW_HEIGHT_RPX }))
+  },
+
+  // 缓存写入：去掉 displayY 字段(只持久化业务数据)
+  _persistList(list) {
+    const clean = list.map(it => ({ id: it.id, content: it.content, type: it.type }))
+    cache.setPendingList(clean)
+  },
+
   _mergeFromOcr(items) {
-    // 把 OCR 确认页返回的条目合入清单（去重 + 截断到 MAX_ITEMS）
     const existing = this.data.pendingList.slice()
     const seen = new Set(existing.map(it => normalize(it.content)))
     for (const c of items) {
@@ -81,8 +107,9 @@ Page({
         type: c.type || detectType(c.content)
       })
     }
-    this.setData({ pendingList: existing })
-    cache.setPendingList(existing)
+    const next = this._withDisplayY(existing)
+    this.setData({ pendingList: next })
+    this._persistList(next)
   },
 
   // ── 输入 ──
@@ -125,23 +152,24 @@ Page({
       content: text,
       type: detectType(text)
     }
-    const newList = this.data.pendingList.concat([newItem])
+    const newList = this._withDisplayY(this.data.pendingList.concat([newItem]))
     this.setData({
       pendingList: newList,
       inputValue: '',
       currentType: '',
       typeLabel: ''
     })
-    cache.setPendingList(newList)
+    this._persistList(newList)
   },
 
   // ── 列表 ──
+  // 注:从直接 wxml 渲染调用,event.currentTarget.dataset.id 拿到 id
   onDelete(e) {
-    const id = e.detail && e.detail.item && e.detail.item.id
+    const id = e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.id
     if (!id) return
-    const newList = this.data.pendingList.filter(it => it.id !== id)
+    const newList = this._withDisplayY(this.data.pendingList.filter(it => it.id !== id))
     this.setData({ pendingList: newList })
-    cache.setPendingList(newList)
+    this._persistList(newList)
   },
 
   onClearAll() {
@@ -159,6 +187,77 @@ Page({
         }
       }
     })
+  },
+
+  // ── 拖拽排序 ──
+  onLongPress(e) {
+    const id = e.currentTarget.dataset.id
+    const index = e.currentTarget.dataset.index
+    if (index == null) return
+    const touch = e.touches && e.touches[0]
+    if (!touch) return
+
+    this._dragStartY = touch.clientY
+    this._dragStartIndex = index
+    this._orderIds = this.data.pendingList.map(it => it.id)
+
+    // 触觉反馈
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+
+    this.setData({ dragId: id })
+  },
+
+  onTouchMove(e) {
+    if (!this.data.dragId) return
+    const touch = e.touches && e.touches[0]
+    if (!touch) return
+
+    const deltaPx = touch.clientY - this._dragStartY
+    const deltaRpx = deltaPx / this._rowHeightPx * ROW_HEIGHT_RPX
+    const total = this._orderIds.length
+
+    // 计算新位置 index（不超出边界）
+    let targetIndex = this._dragStartIndex + Math.round(deltaPx / this._rowHeightPx)
+    if (targetIndex < 0) targetIndex = 0
+    if (targetIndex > total - 1) targetIndex = total - 1
+
+    // 重新排列 _orderIds：把 dragId 从原 startIndex 拿出，插入 targetIndex
+    const newOrder = this._orderIds.filter(id => id !== this.data.dragId)
+    newOrder.splice(targetIndex, 0, this.data.dragId)
+
+    // 根据 newOrder 计算每项的 displayY
+    // dragId 项的 displayY = startIndex * ROW_HEIGHT + deltaRpx（跟手）
+    // 其它项：按 newOrder 中的 index * ROW_HEIGHT
+    const updatedList = this.data.pendingList.map(it => {
+      if (it.id === this.data.dragId) {
+        return Object.assign({}, it, { displayY: this._dragStartIndex * ROW_HEIGHT_RPX + deltaRpx })
+      }
+      const newIdx = newOrder.indexOf(it.id)
+      return Object.assign({}, it, { displayY: newIdx * ROW_HEIGHT_RPX })
+    })
+
+    // 仅在 newOrder 真正变化时更新 _orderIds
+    this._orderIds = newOrder
+    this.setData({ pendingList: updatedList })
+  },
+
+  onTouchEnd() {
+    if (!this.data.dragId) return
+
+    // 按 _orderIds 真正重排 pendingList
+    const byId = {}
+    this.data.pendingList.forEach(it => { byId[it.id] = it })
+    const reordered = this._orderIds.map((id, i) => Object.assign({}, byId[id], { displayY: i * ROW_HEIGHT_RPX }))
+
+    this.setData({
+      pendingList: reordered,
+      dragId: null
+    })
+    this._persistList(reordered)
+
+    this._dragStartY = 0
+    this._dragStartIndex = -1
+    this._orderIds = []
   },
 
   // ── 拍照录入（Phase 4 真实 OCR） ──
