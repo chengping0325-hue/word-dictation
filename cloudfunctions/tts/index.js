@@ -9,9 +9,9 @@
 //   { success: false, error, code? }
 //
 // ⚠️ 密钥必须通过云开发控制台的"环境变量"配置，不在代码或 git 里出现。
-//    需配置：
-//      TENCENT_SECRET_ID
-//      TENCENT_SECRET_KEY
+//    需配置（Key 名严格匹配，否则 process.env 读不到）：
+//      SecretId
+//      SecretKey
 //
 // 音色映射（来自项目所有者约定）：
 //   zh → VoiceType 1001（智瑜，基础女声），PrimaryLanguage 1
@@ -39,12 +39,12 @@ exports.main = async (event) => {
     return { success: false, error: "lang 必须是 'zh' 或 'en'" }
   }
 
-  const secretId = process.env.TENCENT_SECRET_ID
-  const secretKey = process.env.TENCENT_SECRET_KEY
+  const secretId = process.env.SecretId
+  const secretKey = process.env.SecretKey
   if (!secretId || !secretKey) {
     return {
       success: false,
-      error: '云函数未配置 TENCENT_SECRET_ID / TENCENT_SECRET_KEY 环境变量'
+      error: '云函数未配置 SecretId / SecretKey 环境变量'
     }
   }
 
