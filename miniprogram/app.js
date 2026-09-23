@@ -3,6 +3,20 @@
 const CLOUD_ENV_ID = 'cloud1-d0gi6w2bn69381e7e'
 const OPENID_CACHE_KEY = 'openid'
 
+// 全局注入默认分享/转发处理，避免每个页面重复声明
+const SHARE_TITLE = '单词听写喵 - 中英文听写小帮手'
+const SHARE_PATH = '/pages/home/index'
+const _originalPage = Page
+Page = function(opts) {
+  if (!opts.onShareAppMessage) {
+    opts.onShareAppMessage = () => ({ title: SHARE_TITLE, path: SHARE_PATH })
+  }
+  if (!opts.onShareTimeline) {
+    opts.onShareTimeline = () => ({ title: SHARE_TITLE })
+  }
+  return _originalPage(opts)
+}
+
 App({
   async onLaunch() {
     if (!wx.cloud) {
