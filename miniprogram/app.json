@@ -1,6 +1,5 @@
 {
   "pages": [
-    "pages/home/index",
     "pages/dictation/index/index",
     "pages/dictation/ocr-confirm/index",
     "pages/dictation/playing/index",
@@ -9,12 +8,12 @@
     "pages/dictation/result/index",
     "pages/dictation/manual-check/index",
     "pages/dictation/notebook/index",
-    "pages/soon/index"
+    "pages/home/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTitleText": "书斋",
+    "navigationBarTitleText": "单词听写喵",
     "backgroundColor": "#EEF1FB",
     "backgroundTextStyle": "light"
   },

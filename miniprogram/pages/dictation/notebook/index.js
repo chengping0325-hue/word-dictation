@@ -10,7 +10,26 @@ Page({
     filter: 'all',
     sessions: [],
     loading: false,
-    loadError: false
+    loadError: false,
+    statusBarHeight: 20,
+    navBarHeight: 44
+  },
+
+  onLoad() {
+    const windowInfo = wx.getWindowInfo
+      ? wx.getWindowInfo()
+      : wx.getSystemInfoSync()
+    const statusBarHeight = windowInfo.statusBarHeight || 20
+    let navBarHeight = 44
+
+    if (wx.getMenuButtonBoundingClientRect) {
+      const menuButton = wx.getMenuButtonBoundingClientRect()
+      if (menuButton && menuButton.top && menuButton.height) {
+        navBarHeight = (menuButton.top - statusBarHeight) * 2 + menuButton.height
+      }
+    }
+
+    this.setData({ statusBarHeight, navBarHeight })
   },
 
   // 每次回到此 tab 都刷新（用户做完听写 → 跳 result → "查看单词本" reLaunch 过来）

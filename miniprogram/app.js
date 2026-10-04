@@ -5,7 +5,7 @@ const OPENID_CACHE_KEY = 'openid'
 
 // 全局注入默认分享/转发处理，避免每个页面重复声明
 const SHARE_TITLE = '单词听写喵 - 中英文听写小帮手'
-const SHARE_PATH = '/pages/home/index'
+const SHARE_PATH = '/pages/dictation/index/index'
 const _originalPage = Page
 Page = function(opts) {
   if (!opts.onShareAppMessage) {

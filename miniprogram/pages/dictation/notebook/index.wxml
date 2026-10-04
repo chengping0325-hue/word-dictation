@@ -1,3 +1,10 @@
+<!-- 自定义标题栏：单词本是底部主 Tab，不再显示微信的返回首页图标 -->
+<view class="notebook-navbar" style="padding-top: {{ statusBarHeight }}px;">
+  <view class="notebook-navbar__inner" style="height: {{ navBarHeight }}px;">
+    <text class="notebook-navbar__title">单词听写喵</text>
+  </view>
+</view>
+
 <view class="notebook-page has-tab-bar">
 
   <!-- 胶囊式分段控件 -->

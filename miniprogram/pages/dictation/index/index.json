@@ -1,9 +1,8 @@
 {
   "usingComponents": {
-    "word-item": "/components/word-item/index",
     "type-tag": "/components/type-tag/index",
     "dictation-tab-bar": "/components/tab-bar/index"
   },
-  "navigationBarTitleText": "单词听写",
+  "navigationBarTitleText": "单词听写喵",
   "backgroundColor": "#EFF6FF"
 }

@@ -3,6 +3,7 @@
     "type-tag": "/components/type-tag/index",
     "dictation-tab-bar": "/components/tab-bar/index"
   },
-  "navigationBarTitleText": "单词听写",
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "单词听写喵",
   "backgroundColor": "#EFF6FF"
 }
