@@ -40,13 +40,15 @@
 - [ ] 「设置」→「第三方设置」→「服务市场」
 - [ ] 检查「**微信 OCR · 通用印刷体识别**」已开通(开发时已经开过,这里 double check)
 
-### A.4 问题反馈页素材
+### A.4 问题反馈页
 
-- [ ] 把 `miniprogram/assets/feedback-qrcode.png` 替换为**企业微信「我的 → 二维码」**的截图
-      - 压缩到 **80KB 以内**(主包上限 2MB,当前主包约 320KB)
-      - 替换后**必须真机长按验证**能弹出「识别图中二维码」
-- [ ] 确认 `miniprogram/pages/feedback/index.js` 里的 `CONTACT_WECHAT` 是你的真实微信号
-- [ ] 确认反馈页在**基础库 2.18.0 以上**能正常识别(二维码类型为企业微信个人码,官方要求 ≥ 2.18.0)
+- [ ] **真机长按验证**：`miniprogram/pages/feedback/index` 里的二维码长按后
+      能弹出微信原生菜单（含「识别图中二维码」）并成功打开企业微信加好友页
+      - 需 iOS ≥ 8.0.8 / 安卓 ≥ 8.0.7，低版本不弹菜单属正常
+- [ ] 确认 `miniprogram/pages/feedback/index.js` 里的 `CONTACT_EMAIL` 是真实可联系的邮箱
+- [ ] 如需换码：替换 `miniprogram/assets/feedback-qrcode.png`，**四周保留 16px 白边**
+      （静区，实测贴边裁切会导致解码失败），裁切后务必验证能解码
+- [ ] 当前用的是企业微信「联系我」渠道活码，后台换接待成员不需要重新发版
 
 ---
 
