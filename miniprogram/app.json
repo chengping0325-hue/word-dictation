@@ -8,6 +8,7 @@
     "pages/dictation/result/index",
     "pages/dictation/manual-check/index",
     "pages/dictation/notebook/index",
+    "pages/feedback/index",
     "pages/home/index"
   ],
   "window": {

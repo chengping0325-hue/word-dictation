@@ -19,6 +19,31 @@ Page = function(opts) {
 
 App({
   async onLaunch() {
+    // 音频全局选项。必须在 onLaunch 最前面设置，对之后创建的 InnerAudioContext 生效。
+    //
+    // obeyMuteSwitch: false —— iOS 上 InnerAudioContext 默认跟随物理静音键，
+    //   用户手机拨到静音后听写全程无声且没有任何提示（看起来像 App 卡死）。
+    //   设为 false 后静音模式下照常出声。仅 iOS 生效，安卓无副作用。
+    //   注意：基础库 2.3.0 起实例级 ctx.obeyMuteSwitch 已失效，
+    //   官方要求统一用 wx.setInnerAudioOption 全局设置。
+    //
+    // speakerOn: true —— 走扬声器。微信规定 speakerOn 为 true 时会忽略
+    //   mixWithOther 强制与其他音频互斥。听写场景优先保证声音外放清晰，
+    //   用户手机正在放音乐时会被短暂打断，这是产品上接受的取舍。
+    //
+    // mixWithOther: true —— 保留混播意图。当前 speakerOn 为 true 时该参数
+    //   不生效，若未来微信放开限制则自动变为混播。
+    if (wx.setInnerAudioOption) {
+      wx.setInnerAudioOption({
+        obeyMuteSwitch: false,
+        mixWithOther: true,
+        speakerOn: true,
+        fail: (err) => {
+          console.warn('[app.js] setInnerAudioOption 失败:', err && err.errMsg)
+        }
+      })
+    }
+
     if (!wx.cloud) {
       console.error('[app.js] 请使用 2.2.3 或以上的基础库以使用云能力')
       return

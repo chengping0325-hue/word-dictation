@@ -79,6 +79,16 @@ function playAudio(audioUrl) {
     currentAudioContext = ctx
     currentAudioResolve = resolve
 
+    // 实例级兜底：基础库 2.3.0 起官方已改为全局 wx.setInnerAudioOption，
+    // 实例属性不再生效；但在 2.3.0 之前的低版本客户端上，
+    // 唯一能让 iOS 静音模式出声的方式就是设置这个实例属性。
+    // 这里两个都设：低版本靠实例属性生效，新版本靠 app.js 的全局配置。
+    try {
+      ctx.obeyMuteSwitch = false
+    } catch (e) {
+      // 低版本基础库不支持该属性，忽略即可
+    }
+
     ctx.src = audioUrl
 
     ctx.onEnded(() => {

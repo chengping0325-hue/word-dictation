@@ -84,6 +84,13 @@
   <!-- 开始按钮 -->
   <view class="btn-primary {{ pendingList.length === 0 ? 'disabled' : '' }}" bindtap="onStart">开始听写</view>
 
+  <!-- 问题反馈入口 -->
+  <view class="feedback-entry" bindtap="onFeedback">
+    <view class="feedback-entry-icon"></view>
+    <view class="feedback-entry-text">问题反馈</view>
+    <view class="feedback-entry-arrow"></view>
+  </view>
+
   <!-- 底部 Tab -->
   <dictation-tab-bar active="dictation" />
 

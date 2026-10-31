@@ -1,0 +1,124 @@
+.feedback-page {
+  min-height: 100vh;
+  background: #EFF6FF;
+  padding-top: 8rpx;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+}
+
+/* ── 二维码卡片 ── */
+.qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 32rpx 36rpx;
+}
+
+.qr-wrap {
+  width: 480rpx;
+  height: 480rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-image {
+  width: 480rpx;
+  height: 480rpx;
+  border-radius: 24rpx;
+  /* 二维码需要足够对比度才能被识别引擎读出来 */
+  background: #fff;
+}
+
+.qr-title {
+  margin-top: 28rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #0F172A;
+  letter-spacing: 1rpx;
+}
+
+.qr-desc {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #64748b;
+}
+
+/* ── 复制微信号 ── */
+.copy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.copy-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.copy-label {
+  font-size: 22rpx;
+  color: #94a3b8;
+}
+
+.copy-id {
+  margin-top: 6rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #0F172A;
+  /* 微信号是纯 ASCII，长串用等宽风格更好读 */
+  font-family: 'SF Mono', 'Menlo', 'PingFang SC', monospace;
+  word-break: break-all;
+}
+
+.copy-btn {
+  flex-shrink: 0;
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 40rpx;
+  border-radius: 20rpx;
+  background: #2563EB;
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 4rpx 16rpx rgba(37, 99, 235, 0.25);
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.copy-btn:active {
+  transform: scale(0.96);
+}
+
+.copy-btn.copied {
+  background: #16a34a;
+  box-shadow: 0 4rpx 16rpx rgba(22, 163, 74, 0.25);
+}
+
+.copy-tip {
+  margin-top: 20rpx;
+  font-size: 22rpx;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+/* ── 页脚 ── */
+.footer-note {
+  margin-top: 48rpx;
+  padding: 0 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.footer-line {
+  flex: 1;
+  height: 1rpx;
+  background: #DBEAFE;
+}
+
+.footer-text {
+  font-size: 22rpx;
+  color: #94a3b8;
+  flex-shrink: 0;
+}

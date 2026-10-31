@@ -363,6 +363,11 @@ Page({
     cache.setSettings(s)
   },
 
+  // ── 问题反馈 ──
+  onFeedback() {
+    wx.navigateTo({ url: '/pages/feedback/index' })
+  },
+
   // ── 开始听写 ──
   onStart() {
     if (this.data.pendingList.length === 0) {

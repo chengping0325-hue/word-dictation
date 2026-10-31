@@ -1,0 +1,39 @@
+<view class="feedback-page">
+
+  <!-- 二维码卡片 -->
+  <view class="card qr-card">
+    <view class="qr-wrap">
+      <!-- show-menu-by-longpress 必须显式开启，否则长按只弹"保存图片" -->
+      <image class="qr-image"
+             src="{{ qrImage }}"
+             mode="aspectFit"
+             show-menu-by-longpress="{{true }}"
+             bindtap="onTapQrcode" />
+    </view>
+
+    <view class="qr-title">长按二维码，添加客服微信</view>
+    <view class="qr-desc">遇到问题、想要建议，直接告诉我们</view>
+  </view>
+
+  <!-- 复制微信号（兜底路径） -->
+  <view class="card">
+    <view class="card-title">识别不出来？</view>
+    <view class="copy-row">
+      <view class="copy-left">
+        <view class="copy-label">客服微信号</view>
+        <view class="copy-id">{{ wechatId }}</view>
+      </view>
+      <view class="copy-btn {{ copied ? 'copied' : '' }}" bindtap="onCopyWechat">
+        {{ copied ? '已复制' : '复制' }}
+      </view>
+    </view>
+    <view class="copy-tip">复制后打开微信 → 添加朋友 → 搜索微信号</view>
+  </view>
+
+  <view class="footer-note">
+    <view class="footer-line"></view>
+    <view class="footer-text">我们通常会在 1-2 天内回复</view>
+    <view class="footer-line"></view>
+  </view>
+
+</view>
