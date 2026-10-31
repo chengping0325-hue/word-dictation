@@ -1,74 +1,97 @@
-<!-- 自定义标题栏：单词本是底部主 Tab，不再显示微信的返回首页图标 -->
-<view class="notebook-navbar" style="padding-top: {{ statusBarHeight }}px;">
-  <view class="notebook-navbar__inner" style="height: {{ navBarHeight }}px;">
-    <text class="notebook-navbar__title">单词听写喵</text>
-  </view>
-</view>
+<!-- 三段式布局：Page 本身不滚动，中间 scroll-view 独立滚动。
+     好处：
+       1. 顶部标题栏固定在视口顶部，页面滚动时标题不跟着走
+          （右侧小程序胶囊按钮是原生控件，本就固定于右上角，
+            自绘标题栏高度按胶囊位置计算，两者视觉对齐）
+       2. 滚动条落在内容区，不会压到顶部标题栏或底部 Tab 栏
+     page-meta 的 page-style 禁掉 Page 自身滚动，避免与 scroll-view 双滚动条，
+     并把 page 高度收敛到内容区。 -->
+<page-meta page-style="overflow: hidden; height: 100%;"></page-meta>
 
-<view class="notebook-page has-tab-bar">
+<view class="notebook-root">
 
-  <!-- 胶囊式分段控件 -->
-  <view class="segmented-wrap">
-    <view class="segmented">
-      <view class="segment {{ filter === 'all' ? 'active' : '' }}"
-            data-filter="all" bindtap="onFilterChange">全部记录</view>
-      <view class="segment {{ filter === 'wrong' ? 'active' : '' }}"
-            data-filter="wrong" bindtap="onFilterChange">仅错词</view>
+  <!-- 顶部固定栏：标题（+ 右侧小程序胶囊按钮的留白区） -->
+  <view class="notebook-navbar" style="padding-top: {{ statusBarHeight }}px;">
+    <view class="notebook-navbar__inner" style="height: {{ navBarHeight }}px;">
+      <text class="notebook-navbar__title">单词听写喵</text>
     </view>
   </view>
 
-  <!-- Loading -->
-  <view wx:if="{{ loading && sessions.length === 0 }}" class="state-block">
-    <view class="state-icon">⏳</view>
-    <view class="state-text">加载中…</view>
-  </view>
+  <!-- 内容区（独立滚动） -->
+  <scroll-view class="notebook-scroll"
+               scroll-y="{{ true }}"
+               enhanced="{{ true }}"
+               bounces="{{ true }}"
+               fast-deceleration="{{ true }}"
+               enable-back-to-top="{{ true }}">
+    <view class="notebook-content has-tab-bar" style="min-height: {{ scrollMinHeight }}px;">
 
-  <!-- Error -->
-  <view wx:elif="{{ loadError }}" class="state-block">
-    <view class="state-icon">⚠️</view>
-    <view class="state-text">加载失败,请检查网络</view>
-    <view class="btn-retry" bindtap="onRetryLoad">重试</view>
-  </view>
-
-  <!-- Empty -->
-  <view wx:elif="{{ sessions.length === 0 }}" class="state-block">
-    <view class="state-icon">📖</view>
-    <view class="state-text">还没有听写记录</view>
-    <view class="state-sub">回到「听写」开始第一次练习吧</view>
-  </view>
-
-  <!-- Sessions grouped by date -->
-  <block wx:for="{{ sessions }}" wx:for-item="session" wx:key="id">
-    <!-- "仅错词" 模式:若该 session 没有错词,整张卡跳过 -->
-    <view wx:if="{{ filter === 'all' || session.hasWrong !== false }}"
-          class="card">
-      <view class="session-head">
-        <text>{{ session.date }}</text>
-        <text class="dot">·</text>
-        <text>{{ session.summary }}</text>
+      <!-- 胶囊式分段控件 -->
+      <view class="segmented-wrap">
+        <view class="segmented">
+          <view class="segment {{ filter === 'all' ? 'active' : '' }}"
+                data-filter="all" bindtap="onFilterChange">全部记录</view>
+          <view class="segment {{ filter === 'wrong' ? 'active' : '' }}"
+                data-filter="wrong" bindtap="onFilterChange">仅错词</view>
+        </view>
       </view>
 
-      <block wx:for="{{ session.items }}" wx:for-item="item" wx:key="id">
-        <view wx:if="{{ filter === 'all' || !item.isCorrect }}"
-              class="word-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
-          <type-tag type="{{ item.type }}" />
-          <view class="flex-1">
-            <view class="word-text {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }} {{ !item.isCorrect ? 'wrong' : '' }}">{{ item.content }}</view>
-            <view wx:if="{{ item.wrongHint }}" class="wrong-hint">{{ item.wrongHint }}</view>
+      <!-- Loading -->
+      <view wx:if="{{ loading && sessions.length === 0 }}" class="state-block">
+        <view class="state-icon">⏳</view>
+        <view class="state-text">加载中…</view>
+      </view>
+
+      <!-- Error -->
+      <view wx:elif="{{ loadError }}" class="state-block">
+        <view class="state-icon">⚠️</view>
+        <view class="state-text">加载失败,请检查网络</view>
+        <view class="btn-retry" bindtap="onRetryLoad">重试</view>
+      </view>
+
+      <!-- Empty -->
+      <view wx:elif="{{ sessions.length === 0 }}" class="state-block">
+        <view class="state-icon">📖</view>
+        <view class="state-text">还没有听写记录</view>
+        <view class="state-sub">回到「听写」开始第一次练习吧</view>
+      </view>
+
+      <!-- Sessions grouped by date -->
+      <block wx:for="{{ sessions }}" wx:for-item="session" wx:key="id">
+        <!-- "仅错词" 模式:若该 session 没有错词,整张卡跳过 -->
+        <view wx:if="{{ filter === 'all' || session.hasWrong !== false }}"
+              class="card">
+          <view class="session-head">
+            <text>{{ session.date }}</text>
+            <text class="dot">·</text>
+            <text>{{ session.summary }}</text>
           </view>
-          <view class="result-badge {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}">{{ item.isCorrect ? '✓' : '✗' }}</view>
+
+          <block wx:for="{{ session.items }}" wx:for-item="item" wx:key="id">
+            <view wx:if="{{ filter === 'all' || !item.isCorrect }}"
+                  class="word-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }}">
+              <type-tag type="{{ item.type }}" />
+              <view class="flex-1">
+                <view class="word-text {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }} {{ !item.isCorrect ? 'wrong' : '' }}">{{ item.content }}</view>
+                <view wx:if="{{ item.wrongHint }}" class="wrong-hint">{{ item.wrongHint }}</view>
+              </view>
+              <view class="result-badge {{ item.isCorrect ? 'badge-ok' : 'badge-err' }}">{{ item.isCorrect ? '✓' : '✗' }}</view>
+            </view>
+          </block>
+
+          <!-- 每个日期组底部的"重新听写":Tab 区分文案 -->
+          <view class="card-action">
+            <view class="btn-card-action"
+                  data-session-id="{{ session.id }}"
+                  bindtap="onReDictateSession">{{ filter === 'wrong' ? '重新听写错词' : '重新听写' }}</view>
+          </view>
         </view>
       </block>
 
-      <!-- 每个日期组底部的"重新听写":Tab 区分文案 -->
-      <view class="card-action">
-        <view class="btn-card-action"
-              data-session-id="{{ session.id }}"
-              bindtap="onReDictateSession">{{ filter === 'wrong' ? '重新听写错词' : '重新听写' }}</view>
-      </view>
     </view>
-  </block>
+  </scroll-view>
 
+  <!-- 底部 Tab -->
   <dictation-tab-bar active="notebook" />
 
 </view>

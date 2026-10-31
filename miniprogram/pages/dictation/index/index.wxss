@@ -1,13 +1,47 @@
 .dictation-index {
-  min-height: 100vh;
+  /* 三段式布局：Page 本身不滚动，中间 scroll-view 独立滚动。
+     好处：滚动条落在内容区，不会压到底部固定的 Tab 栏上。
+
+     高度用 100% 而不是 100vh：100vh 是整个屏幕高，
+     而本页用原生导航栏（页面内容区 = 屏幕 - 状态栏 - 导航栏），
+     用 100vh 会让底部 Tab 栏被推到屏幕外。
+     page-meta 的 page-style 已把 page 高度收敛到内容区（height:100% +
+     overflow:hidden），这里 height:100% 让根节点填满它。
+
+     不用 position:fixed 撑满 —— fixed 根节点在部分场景下会让
+     scroll-view 的滚动位置计算异常，表现为「滑不到顶部」。 */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: #EFF6FF;
-  padding-top: 8rpx;
 }
 
-/* 底部预留空间比全局 .has-tab-bar 多一段「问题反馈」入口的高度。
-   选择器比 app.wxss 的 .has-tab-bar 更具体，只影响本页，不影响单词本页。 */
-.dictation-index.has-tab-bar {
-  padding-bottom: calc(330rpx + env(safe-area-inset-bottom));
+/* 内容滚动区：flex:1 + height:0 自动填满剩余高度（Tab 栏高度已被扣掉）。
+   height:0 是 flex 子项填满剩余空间的标准写法 —— 只写 flex:1 时，
+   scroll-view 的初始高度是内容高度，flex 压缩不生效会导致不滚动。 */
+.dictation-scroll {
+  flex: 1;
+  height: 0;
+  min-height: 0;
+}
+
+/* 滚动内容的内边距：
+   顶部 —— 替代原根节点的 padding-top
+   底部 —— 留出足够空间，让「问题反馈」离底部 Tab 栏有呼吸感，
+           滚到底时也不会紧贴 Tab 栏。
+
+           数值构成：Tab 栏可视区 110rpx + 视觉余量 80rpx + safe-area。
+           Tab 栏是 fixed 在视口底部，内容滚到底时最后一行会滑到它下面，
+           必须留出这段高度才看得见。
+
+           注意：min-height（用于空清单回弹）与这个 padding 是两套机制，
+           min-height 撑起的是「内容整体高度」，padding 是「内容下方的留白」。
+           两者叠加会让空清单时底部出现大片空白，所以
+           BOUNCE_EXTRA_RPX 保持小值（只够拉出一点弹性）。 */
+.dictation-content {
+  padding-top: 8rpx;
+  padding-bottom: calc(190rpx + env(safe-area-inset-bottom));
 }
 
 /* 添加内容 */
@@ -230,44 +264,17 @@
 }
 
 /* ── 问题反馈入口 ── */
-/* 居中文字链样式：图标 + 文字 + 右箭头，弱化处理不抢「开始听写」的视觉重心。
-   用 block 级 flex + justify-content:center 做居中，不依赖 fit-content / text-align，
-   兼容性最稳（父级是 block 容器，inline 元素需要父级 text-align 才能居中）。 */
+/* 纯文字链接：蓝色文字居中，无图标、无胶囊底色 */
 .feedback-entry {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10rpx;
   margin: 32rpx 0 0;
-  padding: 12rpx 32rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #2563EB;
+  letter-spacing: 1rpx;
+  /* 上下留一点 padding，扩大可点热区，视觉上仍是纯文字 */
+  padding: 8rpx 32rpx;
 }
 
 .feedback-entry:active {
   opacity: 0.6;
-}
-
-.feedback-entry-icon {
-  width: 30rpx;
-  height: 30rpx;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z'/></svg>");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  flex-shrink: 0;
-}
-
-.feedback-entry-text {
-  font-size: 24rpx;
-  color: #94a3b8;
-  letter-spacing: 1rpx;
-}
-
-.feedback-entry-arrow {
-  width: 24rpx;
-  height: 24rpx;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='9 18 15 12 9 6'/></svg>");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  flex-shrink: 0;
 }

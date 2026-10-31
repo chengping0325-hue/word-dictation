@@ -2,34 +2,22 @@
 
   <!-- 二维码卡片 -->
   <view class="card qr-card">
-    <view class="qr-wrap">
-      <!-- show-menu-by-longpress 必须显式开启，否则长按只弹"保存图片" -->
-      <!-- mode 用 widthFix 而非 aspectFit：高度按原始比例自适应，
-           保证二维码点阵不被拉伸变形（变形会导致识别引擎解码失败） -->
-      <image class="qr-image"
-             src="{{ qrImage }}"
-             mode="widthFix"
-             show-menu-by-longpress="{{true }}"
-             bindtap="onTapQrcode" />
+    <!-- 浅色内衬框：让二维码两侧有可见留白（图片自带的白色静区在白卡片上看不出来） -->
+    <view class="qr-frame">
+      <view class="qr-wrap">
+        <!-- show-menu-by-longpress 必须显式开启，否则长按只弹"保存图片" -->
+        <!-- mode 用 widthFix 而非 aspectFit：高度按原始比例自适应，
+             保证二维码点阵不被拉伸变形（变形会导致识别引擎解码失败） -->
+        <image class="qr-image"
+               src="{{ qrImage }}"
+               mode="widthFix"
+               show-menu-by-longpress="{{true }}"
+               bindtap="onTapQrcode" />
+      </view>
     </view>
 
     <view class="qr-title">长按识别二维码，添加客服微信</view>
     <view class="qr-desc">遇到问题、想要建议，直接告诉我们</view>
-  </view>
-
-  <!-- 复制邮箱（兜底路径） -->
-  <view class="card">
-    <view class="card-title">识别不出来？</view>
-    <view class="copy-row">
-      <view class="copy-left">
-        <view class="copy-label">客服邮箱</view>
-        <view class="copy-id">{{ contactEmail }}</view>
-      </view>
-      <view class="copy-btn {{ copied ? 'copied' : '' }}" bindtap="onCopyEmail">
-        {{ copied ? '已复制' : '复制' }}
-      </view>
-    </view>
-    <view class="copy-tip">复制后用邮件 App 发给我们，我们通常 1-2 天内回复</view>
   </view>
 
 </view>

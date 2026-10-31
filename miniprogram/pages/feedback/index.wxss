@@ -1,8 +1,16 @@
 .feedback-page {
   min-height: 100vh;
   background: #EFF6FF;
-  padding-top: 8rpx;
-  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+  /* 不再垂直居中：二维码区域靠上排列。
+     原来 justify-content:center 把卡片推到屏幕中线，
+     卡片顶距导航栏底 378rpx，下方留出大片空白。
+     改成顶部对齐 + 固定上边距，卡片位置稳定在导航栏下方。 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 左右 48rpx：卡片离屏幕边缘留出更宽的间距 */
+  padding: 96rpx 48rpx calc(96rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
 /* ── 二维码卡片 ── */
@@ -10,18 +18,39 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40rpx 32rpx 36rpx;
+  /* 卡片在页面里水平居中。.card 自带 margin: 24rpx 32rpx 0，这里覆盖为 0，
+     水平位置交给 .feedback-page 的 padding 统一控制。 */
+  margin: 0;
+  width: 100%;
+  /* box-sizing 必须显式声明：小程序 wxss 默认 content-box，
+     width:100% + padding 会让卡片实际宽度超出父容器 56rpx。 */
+  box-sizing: border-box;
+  padding: 32rpx 28rpx 40rpx;
+}
+
+/* 内衬框
+ * 用容器 padding 给二维码四周留出空白（二维码图片自带一圈白色静区，
+ * quiet zone，识别必需不能裁；把它和卡片一起留白，两侧间距就看得见）。
+ * 背景与卡片同为白色，视觉上是一整块干净的白底，不额外引入色块。 */
+.qr-frame {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28rpx;
+  background: #fff;
+  border-radius: 28rpx;
 }
 
 .qr-wrap {
-  width: 480rpx;
+  width: 420rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .qr-image {
-  width: 480rpx;
+  width: 420rpx;
   /* 二维码需要足够对比度才能被识别引擎读出来 */
   background: #fff;
   /* 保持点阵锐利，避免缩放插值造成的边缘模糊 */
@@ -29,74 +58,17 @@
 }
 
 .qr-title {
-  margin-top: 28rpx;
+  margin-top: 32rpx;
   font-size: 30rpx;
   font-weight: 600;
   color: #0F172A;
   letter-spacing: 1rpx;
+  text-align: center;
 }
 
 .qr-desc {
-  margin-top: 10rpx;
+  margin-top: 12rpx;
   font-size: 24rpx;
   color: #64748b;
-}
-
-/* ── 复制微信号 ── */
-.copy-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24rpx;
-}
-
-.copy-left {
-  flex: 1;
-  min-width: 0;
-}
-
-.copy-label {
-  font-size: 22rpx;
-  color: #94a3b8;
-}
-
-.copy-id {
-  margin-top: 6rpx;
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #0F172A;
-  /* 微信号是纯 ASCII，长串用等宽风格更好读 */
-  font-family: 'SF Mono', 'Menlo', 'PingFang SC', monospace;
-  word-break: break-all;
-}
-
-.copy-btn {
-  flex-shrink: 0;
-  height: 64rpx;
-  line-height: 64rpx;
-  padding: 0 40rpx;
-  border-radius: 20rpx;
-  background: #2563EB;
-  color: #fff;
-  font-size: 26rpx;
-  font-weight: 600;
   text-align: center;
-  box-shadow: 0 4rpx 16rpx rgba(37, 99, 235, 0.25);
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.copy-btn:active {
-  transform: scale(0.96);
-}
-
-.copy-btn.copied {
-  background: #16a34a;
-  box-shadow: 0 4rpx 16rpx rgba(22, 163, 74, 0.25);
-}
-
-.copy-tip {
-  margin-top: 20rpx;
-  font-size: 22rpx;
-  color: #94a3b8;
-  line-height: 1.6;
 }

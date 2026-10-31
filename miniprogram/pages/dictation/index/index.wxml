@@ -1,95 +1,125 @@
-<!-- 拖拽时禁用 page 滚动,避免拖项目时整页跟着滚 -->
-<page-meta page-style="{{ dragId ? 'overflow: hidden;' : '' }}"></page-meta>
+<!-- 三段式布局：Page 不滚动，中间 scroll-view 承担滚动。
+     这样滚动条落在内容区，不会压到底部固定的 Tab 栏上。
+     page-meta 的 page-style 只作用于本页（page 根节点相当于 body）：
+       overflow: hidden  —— 禁掉 Page 自身滚动，避免与 scroll-view 双滚动条
+       height: 100%      —— 让 page 高度收敛到内容区，配合根节点 height:100%
+     不用 position:fixed 撑满 —— fixed 根节点在部分场景下会让 scroll-view
+     滚动位置计算异常（表现为滑不到顶部）。 -->
+<page-meta page-style="overflow: hidden; height: 100%;"></page-meta>
 
-<view class="dictation-index has-tab-bar">
+<view class="dictation-index">
 
-  <!-- 添加内容 -->
-  <view class="card">
-    <view class="card-title">添加内容</view>
-    <view class="input-row">
-      <view class="input-wrap">
-        <input class="input" placeholder="输入单词或句子" value="{{ inputValue }}" bindinput="onInput" confirm-type="done" />
-        <view class="camera-btn" bindtap="onCameraTap">
-          <view class="camera-icon-svg"></view>
+  <!-- 内容区（独立滚动）
+
+       enhanced: 必须开 —— bounces（iOS 回弹）、show-scrollbar、fast-deceleration
+                 都只在 enhanced 模式下生效。不开就没有回弹，手感很生硬。
+       bounces: iOS 边界弹性控制（滚到顶/底继续拉会有回弹）。
+       scroll-y="{{ !dragId }}": 拖拽时关掉滚动，避免排序没落下来页面先滚走。
+       enable-back-to-top: iOS 点顶部状态栏回顶部（2.27.3+）。
+       binddragstart/binddragging/binddragend: enhanced 模式下 scroll-view 会接管
+                 touch 事件，元素的 catchtouchmove 收不到了 —— 拖拽改用这三个
+                 官方拖拽事件，它们同样带 e.touches[0].clientY。 -->
+  <scroll-view class="dictation-scroll"
+               scroll-y="{{ !dragId }}"
+               enhanced="{{ true }}"
+               bounces="{{ true }}"
+               fast-deceleration="{{ true }}"
+               enable-back-to-top="{{ true }}"
+               binddragstart="onDragStart"
+               binddragging="onDragMove"
+               binddragend="onDragEnd">
+    <!-- min-height 由 JS 实测滚动容器高度后算出（容器高度 + BOUNCE_EXTRA_RPX），
+         让内容永远略微超出可视区 —— 空清单时也能拉动回弹。
+         iOS 的 UIScrollView 只有 contentSize > bounds 才可滚动，
+         内容不足一屏就完全没有回弹感。 -->
+    <view class="dictation-content" style="min-height: {{ scrollMinHeight }}px;">
+
+      <!-- 添加内容 -->
+      <view class="card">
+        <view class="card-title">添加内容</view>
+        <view class="input-row">
+          <view class="input-wrap">
+            <input class="input" placeholder="输入单词或句子" value="{{ inputValue }}" bindinput="onInput" confirm-type="done" />
+            <view class="camera-btn" bindtap="onCameraTap">
+              <view class="camera-icon-svg"></view>
+            </view>
+          </view>
+          <view class="add-btn" bindtap="onAdd">添加</view>
+        </view>
+        <view class="input-hint-row">
+          <view wx:if="{{ typeLabel }}" class="preview-tag-wrap">
+            <type-tag type="{{ currentType }}" />
+            <view class="preview-hint">已识别为该类型</view>
+          </view>
+          <view wx:else class="input-hint">支持单词、句子、中英文 · 系统自动识别</view>
         </view>
       </view>
-      <view class="add-btn" bindtap="onAdd">添加</view>
-    </view>
-    <view class="input-hint-row">
-      <view wx:if="{{ typeLabel }}" class="preview-tag-wrap">
-        <type-tag type="{{ currentType }}" />
-        <view class="preview-hint">已识别为该类型</view>
-      </view>
-      <view wx:else class="input-hint">支持单词、句子、中英文 · 系统自动识别</view>
-    </view>
-  </view>
 
-  <!-- 听写清单 -->
-  <view class="card">
-    <view class="list-header">
-      <view class="card-title">听写清单 · {{ pendingList.length }} 条</view>
-      <view wx:if="{{ pendingList.length > 0 }}" class="clear-all" bindtap="onClearAll">一键清空</view>
-    </view>
-    <view wx:if="{{ pendingList.length === 0 }}" class="empty">
-      <view class="empty-icon-svg"></view>
-      <view class="empty-title">还没有内容</view>
-      <view class="empty-sub">手动输入或拍照添加内容</view>
-    </view>
-    <view wx:else class="drag-list" style="height: {{ pendingList.length * 100 }}rpx;">
-      <view
-        wx:for="{{ pendingList }}"
-        wx:key="id"
-        class="drag-item word-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }} {{ dragId === item.id ? 'dragging' : '' }}"
-        style="transform: translateY({{ item.displayY }}rpx); transition: {{ dragId === item.id ? 'none' : 'transform 0.18s ease' }}; z-index: {{ dragId === item.id ? 100 : 1 }};"
-        data-id="{{ item.id }}"
-        data-index="{{ index }}"
-        bindtap="onEditItem"
-        bindlongpress="onLongPress"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-        bindtouchcancel="onTouchEnd"
-      >
-        <view class="drag-handle">⠿</view>
-        <type-tag type="{{ item.type }}" />
-        <view class="word-text {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }}">{{ item.content }}</view>
-        <view class="word-del" catchtap="onDelete" data-id="{{ item.id }}">✕</view>
+      <!-- 听写清单 -->
+      <view class="card">
+        <view class="list-header">
+          <view class="card-title">听写清单 · {{ pendingList.length }} 条</view>
+          <view wx:if="{{ pendingList.length > 0 }}" class="clear-all" bindtap="onClearAll">一键清空</view>
+        </view>
+        <view wx:if="{{ pendingList.length === 0 }}" class="empty">
+          <view class="empty-icon-svg"></view>
+          <view class="empty-title">还没有内容</view>
+          <view class="empty-sub">手动输入或拍照添加内容</view>
+        </view>
+        <view wx:else class="drag-list" style="height: {{ pendingList.length * 100 }}rpx;">
+          <view
+            wx:for="{{ pendingList }}"
+            wx:key="id"
+            class="drag-item word-item {{ item.type === 'en_sentence' || item.type === 'cn_sentence' ? 'with-sentence' : 'compact' }} {{ dragId === item.id ? 'dragging' : '' }}"
+            style="transform: translateY({{ item.displayY }}rpx); transition: {{ dragId === item.id ? 'none' : 'transform 0.18s ease' }}; z-index: {{ dragId === item.id ? 100 : 1 }};"
+            data-id="{{ item.id }}"
+            data-index="{{ index }}"
+            bindtap="onEditItem"
+            bindlongpress="onLongPress"
+            bindtouchmove="onTouchMove"
+            bindtouchend="onTouchEnd"
+            bindtouchcancel="onTouchEnd"
+          >
+            <view class="drag-handle">⠿</view>
+            <type-tag type="{{ item.type }}" />
+            <view class="word-text {{ (item.type === 'en_sentence' || item.type === 'cn_sentence') ? 'sentence' : '' }}">{{ item.content }}</view>
+            <view class="word-del" catchtap="onDelete" data-id="{{ item.id }}">✕</view>
+          </view>
+        </view>
       </view>
-    </view>
-  </view>
 
-  <!-- 听写设置 -->
-  <view class="card {{ pendingList.length === 0 ? 'card-disabled' : '' }}">
-    <view class="card-title">听写设置</view>
-    <view class="setting-row">
-      <view class="setting-label">朗读次数</view>
-      <view class="stepper">
-        <view class="stepper-btn" bindtap="onStepperMinus" data-key="readCount">−</view>
-        <view class="stepper-val">{{ settings.readCount }}</view>
-        <view class="stepper-btn" bindtap="onStepperPlus" data-key="readCount">+</view>
+      <!-- 听写设置 -->
+      <view class="card {{ pendingList.length === 0 ? 'card-disabled' : '' }}">
+        <view class="card-title">听写设置</view>
+        <view class="setting-row">
+          <view class="setting-label">朗读次数</view>
+          <view class="stepper">
+            <view class="stepper-btn" bindtap="onStepperMinus" data-key="readCount">−</view>
+            <view class="stepper-val">{{ settings.readCount }}</view>
+            <view class="stepper-btn" bindtap="onStepperPlus" data-key="readCount">+</view>
+          </view>
+        </view>
+        <view class="setting-row">
+          <view>
+            <view class="setting-label">间隔时间</view>
+            <view class="setting-sub">句子建议 5 秒以上</view>
+          </view>
+          <view class="stepper">
+            <view class="stepper-btn" bindtap="onStepperMinus" data-key="interval">−</view>
+            <view class="stepper-val">{{ settings.interval }}s</view>
+            <view class="stepper-btn" bindtap="onStepperPlus" data-key="interval">+</view>
+          </view>
+        </view>
       </view>
-    </view>
-    <view class="setting-row">
-      <view>
-        <view class="setting-label">间隔时间</view>
-        <view class="setting-sub">句子建议 5 秒以上</view>
-      </view>
-      <view class="stepper">
-        <view class="stepper-btn" bindtap="onStepperMinus" data-key="interval">−</view>
-        <view class="stepper-val">{{ settings.interval }}s</view>
-        <view class="stepper-btn" bindtap="onStepperPlus" data-key="interval">+</view>
-      </view>
-    </view>
-  </view>
 
-  <!-- 开始按钮 -->
-  <view class="btn-primary {{ pendingList.length === 0 ? 'disabled' : '' }}" bindtap="onStart">开始听写</view>
+      <!-- 开始按钮 -->
+      <view class="btn-primary {{ pendingList.length === 0 ? 'disabled' : '' }}" bindtap="onStart">开始听写</view>
 
-  <!-- 问题反馈入口 -->
-  <view class="feedback-entry" bindtap="onFeedback">
-    <view class="feedback-entry-icon"></view>
-    <view class="feedback-entry-text">问题反馈</view>
-    <view class="feedback-entry-arrow"></view>
-  </view>
+      <!-- 问题反馈入口 -->
+      <view class="feedback-entry" bindtap="onFeedback">问题反馈</view>
+
+    </view>
+  </scroll-view>
 
   <!-- 底部 Tab -->
   <dictation-tab-bar active="dictation" />

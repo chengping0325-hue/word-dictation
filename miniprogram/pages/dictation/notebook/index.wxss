@@ -1,6 +1,20 @@
+/* ── 三段式布局 ──
+   Page 不滚动，中间 scroll-view 独立滚动。
+   好处：顶部标题栏固定在视口顶部（滚动时标题不跟着走），
+   滚动条落在内容区，不会压到标题栏或底部 Tab 栏。 */
+.notebook-root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #EFF6FF;
+}
+
+/* 顶部固定栏：状态栏占位 + 标题行
+   z-index 高于 Tab 栏(100)，保证滚动内容从标题栏下方穿过时被遮挡 */
 .notebook-navbar {
-  position: relative;
-  z-index: 10;
+  flex-shrink: 0;
+  z-index: 101;
   background: #fff;
   box-sizing: border-box;
 }
@@ -19,9 +33,15 @@
   line-height: 1;
 }
 
-.notebook-page {
-  min-height: 100vh;
-  background: #EFF6FF;
+/* 内容滚动区：flex:1 自动填满剩余高度（Tab 栏高度已被扣掉） */
+.notebook-scroll {
+  flex: 1;
+  height: 0;
+  min-height: 0;
+}
+
+/* 滚动内容：顶部留白 + 底部 Tab 栏高度 */
+.notebook-content {
   padding-top: 8rpx;
 }
 

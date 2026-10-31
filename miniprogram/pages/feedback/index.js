@@ -13,18 +13,10 @@
 //   4. 二维码内容是企业微信「联系我」渠道活码
 //      (https://work.weixin.qq.com/u/vcd...)，长按后由微信原生能力打开
 //      企业微信加好友页。不走本页面代码，无需自行解析链接。
-//   5. 「复制邮箱」是长按识别失败时的兜底路径（低版本基础库 / 用户不熟悉长按）。
-//      用邮箱而非微信号：用户加的是企业微信，拿不到也不需要个人微信号，
-//      邮箱是唯一确定能收到反馈的渠道。
-
-// 客服邮箱。与 docs/PRIVACY.md / docs/PRIVACY-PLAIN.txt 保持一致。
-const CONTACT_EMAIL = 'chengping0325@gmail.com'
 
 Page({
   data: {
-    qrImage: '/assets/feedback-qrcode.png',
-    contactEmail: CONTACT_EMAIL,
-    copied: false
+    qrImage: '/assets/feedback-qrcode.png'
   },
 
   onShareAppMessage() {
@@ -39,32 +31,5 @@ Page({
   onTapQrcode() {
     // 短按不响应。二维码场景下用户误触短按不应该有反馈，
     // 否则用户会以为长按识别坏了。
-  },
-
-  // 复制邮箱（兜底路径）
-  onCopyEmail() {
-    wx.setClipboardData({
-      data: CONTACT_EMAIL,
-      success: () => {
-        this.setData({ copied: true })
-        wx.showToast({ title: '邮箱已复制', icon: 'none' })
-        // 2.5 秒后恢复按钮文案
-        setTimeout(() => {
-          if (this._alive) this.setData({ copied: false })
-        }, 2500)
-      },
-      fail: (err) => {
-        console.error('[feedback] 复制邮箱失败:', err && err.errMsg)
-        wx.showToast({ title: '复制失败,请手动记录', icon: 'none' })
-      }
-    })
-  },
-
-  onLoad() {
-    this._alive = true
-  },
-
-  onUnload() {
-    this._alive = false
   }
 })

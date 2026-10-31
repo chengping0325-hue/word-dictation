@@ -5,6 +5,20 @@ const { formatSessionDate } = require('../../../utils/time')
 
 const PAGE_LIMIT = 20
 
+// 滚动内容比容器多出的高度（rpx）。作用：让内容永远略微超过可视区。
+//
+// 两个原因都需要它：
+//   1. iOS 的 UIScrollView 只有 contentSize > bounds 时才可滚动，
+//      内容不足一屏就没有回弹（bounces）。
+//   2. enhanced 模式下 scroll-view 在「空滚动区域」仍会挂载滚动监听
+//      并吞掉 touch 事件，子元素的 bindtap 会失效 ——
+//      单词本记录少的时候，「全部记录 / 仅错词」分段控件就点不动。
+//
+// 这个值和内容区的 padding-bottom 是两套独立机制：
+// min-height 撑起的是内容整体高度，padding 是内容下方的留白。
+// 两者叠加会让内容少时底部出现大片空白，所以这里要小。
+const BOUNCE_EXTRA_RPX = 60
+
 Page({
   data: {
     filter: 'all',
@@ -12,7 +26,8 @@ Page({
     loading: false,
     loadError: false,
     statusBarHeight: 20,
-    navBarHeight: 44
+    navBarHeight: 44,
+    scrollMinHeight: 0        // 内容区最小高度(px)，见 _measureScrollMinHeight
   },
 
   onLoad() {
@@ -29,7 +44,13 @@ Page({
       }
     }
 
+    this._windowWidth = windowInfo.windowWidth || 375
     this.setData({ statusBarHeight, navBarHeight })
+  },
+
+  onReady() {
+    // 布局就绪后测量滚动容器高度，撑出恒定的回弹余量
+    this._measureScrollMinHeight()
   },
 
   // 每次回到此 tab 都刷新（用户做完听写 → 跳 result → "查看单词本" reLaunch 过来）
@@ -63,6 +84,26 @@ Page({
 
   onRetryLoad() {
     this._loadSessions()
+  },
+
+  /**
+   * 让内容区始终比滚动容器高出 BOUNCE_EXTRA_RPX，
+   * 这样即使内容不足一屏（还没有听写记录时），也能拉动并回弹，
+   * 同时避免 enhanced 模式下 scroll-view 吞掉子元素的 tap 事件。
+   *
+   * 用 JS 实测而不是写百分比：scroll-view 的直接子元素用百分比高度
+   * 在部分 WebView 下解析基准不确定，实测值最可靠。
+   */
+  _measureScrollMinHeight() {
+    wx.createSelectorQuery()
+      .in(this)
+      .select('.notebook-scroll')
+      .boundingClientRect(rect => {
+        if (!rect || !rect.height) return
+        const extraPx = BOUNCE_EXTRA_RPX * (this._windowWidth || 375) / 750
+        this.setData({ scrollMinHeight: Math.round(rect.height + extraPx) })
+      })
+      .exec()
   },
 
   // 卡片底部"重新听写" / "重新听写错词"

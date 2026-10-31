@@ -108,8 +108,11 @@ page {
 .muted { color: #94a3b8; }
 
 /* 滚动容器留出底部 Tab 高度
- * Tab 可视区 110rpx + 主按钮 96rpx + 视觉余量 40rpx + 下方 safe-area
+ * Tab 可视区 110rpx + 视觉余量 40rpx + 下方 safe-area
+ * 注：原先这里还额外算了「主按钮 96rpx」，但主按钮在内容流里、
+ * 滚到底时就在 Tab 栏正上方，不该重复预留 —— 会造成底部大片空白。
+ * 现在主页改用三段式布局（scroll-view 独立滚动），本页仍走 Page 滚动。
  */
 .has-tab-bar {
-  padding-bottom: calc(246rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
